@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Training artifacts
+checkpoints/
+wandb/
+*.ckpt
+*.safetensors
+
+# Data / generated
+data/*.jsonl
+data/*.json
+!data/.gitkeep
+
+# Eval / analysis outputs
+analysis/*.ipynb_checkpoints/
+results/
+
+# OS
+.DS_Store

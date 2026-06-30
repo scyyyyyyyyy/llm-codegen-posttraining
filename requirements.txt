@@ -1,0 +1,9 @@
+torch
+transformers
+trl
+peft
+datasets
+accelerate
+vllm
+evalplus
+wandb
