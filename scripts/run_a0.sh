@@ -22,6 +22,7 @@ NSAMPLES="${NSAMPLES:-64}"
 TEMP="${TEMP:-0.8}"
 TP="${TP:-1}"                    # tensor-parallel; 1 GPU
 DO_PASSK="${DO_PASSK:-1}"        # set 0 to skip pass@k (faster / cheaper)
+DATASETS="${DATASETS:-humaneval mbpp}"   # override e.g. DATASETS=mbpp
 
 export HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
 
@@ -31,30 +32,33 @@ newest_results() { ls -t "$1"/*eval_results.json 2>/dev/null | head -1; }
 
 gen_eval() {   # $1=dataset  $2=mode(greedy|passk)  $3=root
   local dataset="$1" mode="$2" root="$3"
-  # vLLM's engine can throw during SHUTDOWN teardown (e.g. libnvrtc.so.13 missing
-  # on CUDA 12 images) AFTER the samples file is already written. Don't let that
-  # nonzero exit abort the pipeline; verify the output file instead.
-  set +e
-  if [ "$mode" = "greedy" ]; then
-    python -m evalplus.codegen "$MODEL" "$dataset" --greedy --backend vllm --tp "$TP" --root "$root"
-  else
-    python -m evalplus.codegen "$MODEL" "$dataset" --n_samples "$NSAMPLES" \
-        --temperature "$TEMP" --backend vllm --tp "$TP" --root "$root"
-  fi
-  set -e
-  local raw; raw="$(newest_samples "${root}/${dataset}")"
-  if [ -z "$raw" ]; then
-    echo "ERROR: codegen produced no samples in ${root}/${dataset}" >&2
-    return 1
-  fi
-  python -m evalplus.sanitize --samples "$raw" >/dev/null
-  local san="${raw%.jsonl}-sanitized.jsonl"
-  [ -f "$san" ] || san="$raw"       # fall back if sanitize named it differently
-  python -m evalplus.evaluate --dataset "$dataset" --samples "$san"
-  newest_results "${root}/${dataset}"
+  # IMPORTANT: everything except the final path must go to stderr, otherwise the
+  # caller's $(gen_eval ...) captures all the vLLM/codegen logs as the "path".
+  {
+    # vLLM's engine can throw during SHUTDOWN teardown (e.g. libnvrtc.so.13 missing
+    # on CUDA 12 images) AFTER the samples file is written; don't let that abort us.
+    set +e
+    if [ "$mode" = "greedy" ]; then
+      python -m evalplus.codegen "$MODEL" "$dataset" --greedy --backend vllm --tp "$TP" --root "$root"
+    else
+      python -m evalplus.codegen "$MODEL" "$dataset" --n_samples "$NSAMPLES" \
+          --temperature "$TEMP" --backend vllm --tp "$TP" --root "$root"
+    fi
+    set -e
+    local raw; raw="$(newest_samples "${root}/${dataset}")"
+    if [ -z "$raw" ]; then
+      echo "ERROR: codegen produced no samples in ${root}/${dataset}" >&2
+      return 1
+    fi
+    python -m evalplus.sanitize --samples "$raw" >/dev/null
+    SAN="${raw%.jsonl}-sanitized.jsonl"
+    [ -f "$SAN" ] || SAN="$raw"       # fall back if sanitize named it differently
+    python -m evalplus.evaluate --dataset "$dataset" --samples "$SAN"
+  } 1>&2
+  newest_results "${root}/${dataset}"   # the ONLY thing on stdout
 }
 
-for DATASET in humaneval mbpp; do
+for DATASET in $DATASETS; do
   echo "############ ${DATASET} :: ${TAG} ############"
   GREEDY_RESULTS="$(gen_eval "$DATASET" greedy "${ROOT}/greedy")"
   echo "greedy results: ${GREEDY_RESULTS}"
