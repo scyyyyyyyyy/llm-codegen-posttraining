@@ -23,6 +23,7 @@ TEMP="${TEMP:-0.8}"
 TP="${TP:-1}"                    # tensor-parallel; 1 GPU
 DO_PASSK="${DO_PASSK:-1}"        # set 0 to skip pass@k (faster / cheaper)
 DATASETS="${DATASETS:-humaneval mbpp}"   # override e.g. DATASETS=mbpp
+PARALLEL="${PARALLEL:-8}"        # evalplus eval workers; too high OOMs the pool on pass@k
 
 export HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
 
@@ -53,7 +54,7 @@ gen_eval() {   # $1=dataset  $2=mode(greedy|passk)  $3=root
     python -m evalplus.sanitize --samples "$raw" >/dev/null
     SAN="${raw%.jsonl}-sanitized.jsonl"
     [ -f "$SAN" ] || SAN="$raw"       # fall back if sanitize named it differently
-    python -m evalplus.evaluate --dataset "$dataset" --samples "$SAN"
+    python -m evalplus.evaluate --dataset "$dataset" --samples "$SAN" --parallel "$PARALLEL"
   } 1>&2
   newest_results "${root}/${dataset}"   # the ONLY thing on stdout
 }
