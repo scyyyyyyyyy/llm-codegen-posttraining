@@ -2,5 +2,8 @@
 # vllm brings a matching torch + transformers + numpy.
 # Python 3.12 safe. For training add requirements-train.txt; for local
 # statistics/plots add requirements-analysis.txt.
+#
+# evalplus is pinned: unpinned, pip resolves to 0.2.1 (no `codegen` CLI). 0.3.1
+# ships the codegen entrypoint that scripts/run_a0.sh drives.
 vllm
-evalplus
+evalplus==0.3.1

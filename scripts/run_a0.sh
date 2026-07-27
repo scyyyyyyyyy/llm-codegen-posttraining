@@ -4,16 +4,14 @@
 # A0  = student  Qwen2.5-Coder-1.5B-Instruct
 # A0' = teacher  Qwen2.5-Coder-7B-Instruct   (OPD ceiling reference)
 #
-# Produces, per dataset: greedy pass@1 (base + plus) and pass@k (k=1,4,16,64),
-# plus our error breakdown + difficulty stratification via eval.run_a0.
+# Flow per dataset (evalplus 0.3.1): codegen (vLLM) -> sanitize -> evaluate,
+# for BOTH greedy (pass@1) and n-sample (pass@k). Then eval.run_a0 adds our
+# error breakdown + difficulty stratification -> results/a0_<tag>_<dataset>.json.
 #
 # --- AutoDL notes ---------------------------------------------------------
-#   HuggingFace is often unreachable from CN; use the mirror:
-#     export HF_ENDPOINT=https://hf-mirror.com
-#   evalplus pulls its datasets from GitHub releases; if slow, enable AutoDL's
-#   academic acceleration in the SSH session BEFORE running:
-#     source /etc/network_turbo
-#   One 24GB GPU (3090/4090) is enough for 1.5B and 7B in bf16.
+#   Run these ONCE in the SSH session before this script:
+#     source /etc/network_turbo          # academic acceleration (model/dataset dl)
+#   HF mirror is exported below. One 24-48GB GPU handles 1.5B and 7B in bf16.
 # --------------------------------------------------------------------------
 set -euo pipefail
 
@@ -22,32 +20,45 @@ TAG="${TAG:-qwen1.5b}"            # use qwen7b for A0'
 ROOT="${ROOT:-evalplus_results}"
 NSAMPLES="${NSAMPLES:-64}"
 TEMP="${TEMP:-0.8}"
+TP="${TP:-1}"                    # tensor-parallel; 1 GPU
+DO_PASSK="${DO_PASSK:-1}"        # set 0 to skip pass@k (faster / cheaper)
 
 export HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
 
-newest_results() {   # newest *_eval_results.json under $ROOT/$1
-  ls -t "${ROOT}/$1"/*eval_results.json 2>/dev/null | head -1
+# newest samples .jsonl in a dir, ignoring sanitized / results files
+newest_samples() { ls -t "$1"/*.jsonl 2>/dev/null | grep -v -e sanitized -e eval_results | head -1; }
+newest_results() { ls -t "$1"/*eval_results.json 2>/dev/null | head -1; }
+
+gen_eval() {   # $1=dataset  $2=mode(greedy|passk)  $3=root
+  local dataset="$1" mode="$2" root="$3"
+  if [ "$mode" = "greedy" ]; then
+    python -m evalplus.codegen "$MODEL" "$dataset" --greedy --backend vllm --tp "$TP" --root "$root"
+  else
+    python -m evalplus.codegen "$MODEL" "$dataset" --n_samples "$NSAMPLES" \
+        --temperature "$TEMP" --backend vllm --tp "$TP" --root "$root"
+  fi
+  local raw; raw="$(newest_samples "${root}/${dataset}")"
+  python -m evalplus.sanitize --samples "$raw" >/dev/null
+  local san="${raw%.jsonl}-sanitized.jsonl"
+  [ -f "$san" ] || san="$raw"       # fall back if sanitize named it differently
+  python -m evalplus.evaluate --dataset "$dataset" --samples "$san"
+  newest_results "${root}/${dataset}"
 }
 
 for DATASET in humaneval mbpp; do
   echo "############ ${DATASET} :: ${TAG} ############"
-
-  # 1) greedy -> pass@1 (evalplus generates AND evaluates in one call)
-  python -m evalplus.evaluate --model "${MODEL}" --dataset "${DATASET}" \
-      --backend vllm --greedy --root "${ROOT}"
-  GREEDY_RESULTS="$(newest_results "${DATASET}")"
+  GREEDY_RESULTS="$(gen_eval "$DATASET" greedy "${ROOT}/greedy")"
   echo "greedy results: ${GREEDY_RESULTS}"
 
-  # 2) n-sample -> pass@k
-  python -m evalplus.evaluate --model "${MODEL}" --dataset "${DATASET}" \
-      --backend vllm --n_samples "${NSAMPLES}" --temperature "${TEMP}" --root "${ROOT}"
-  PASSK_RESULTS="$(newest_results "${DATASET}")"
-  echo "pass@k results: ${PASSK_RESULTS}"
+  PASSK_ARG=()
+  if [ "$DO_PASSK" = "1" ]; then
+    PASSK_RESULTS="$(gen_eval "$DATASET" passk "${ROOT}/passk")"
+    echo "pass@k results: ${PASSK_RESULTS}"
+    PASSK_ARG=(--passk-results "${PASSK_RESULTS}")
+  fi
 
-  # 3) collect: pass@1/pass@k + error breakdown + difficulty stratification
-  python -m eval.run_a0 --dataset "${DATASET}" --tag "${TAG}" \
-      --greedy-results "${GREEDY_RESULTS}" \
-      --passk-results  "${PASSK_RESULTS}"
+  python -m eval.run_a0 --dataset "$DATASET" --tag "$TAG" \
+      --greedy-results "${GREEDY_RESULTS}" "${PASSK_ARG[@]}"
 done
 
 echo "Done. Summaries in results/a0_${TAG}_*.json"
