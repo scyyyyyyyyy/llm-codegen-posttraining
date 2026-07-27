@@ -1,54 +1,28 @@
-"""SFT with trl's SFTTrainer + LoRA on Qwen2.5-Coder-1.5B-Instruct."""
+"""SFT: the shared starting point A1 for all RL/OPD arms (v2 §5.2).
+
+Config (v2 §5.2):
+  LoRA r=16, alpha=32; targets = attn {q,k,v,o} + MLP {gate,up,down}
+  lr 2e-4, cosine, 3 epochs, effective batch 16, max_len 2048, packing on
+  framework: TRL SFTTrainer; ~1-2 H100-hours
+
+Train 3 seeds (statistics plan, v2 §6).
+"""
 
 from __future__ import annotations
 
 import argparse
 
-BASE_MODEL = "Qwen/Qwen2.5-Coder-1.5B-Instruct"
-
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--data", default="data/sft.jsonl")
-    parser.add_argument("--model", default=BASE_MODEL)
-    parser.add_argument("--output-dir", default="checkpoints/sft")
-    args = parser.parse_args()
-
-    from datasets import load_dataset
-    from peft import LoraConfig
-    from trl import SFTConfig, SFTTrainer
-
-    dataset = load_dataset("json", data_files=args.data, split="train")
-
-    peft_config = LoraConfig(
-        r=16,
-        lora_alpha=32,
-        target_modules=["q_proj", "k_proj", "v_proj", "o_proj"],
-        task_type="CAUSAL_LM",
-    )
-
-    sft_config = SFTConfig(
-        output_dir=args.output_dir,
-        learning_rate=2e-4,
-        per_device_train_batch_size=4,
-        gradient_accumulation_steps=4,  # effective batch = 16
-        num_train_epochs=3,
-        warmup_ratio=0.05,
-        lr_scheduler_type="cosine",
-        max_seq_length=2048,
-        packing=True,
-        logging_steps=10,
-        report_to="wandb",
-    )
-
-    trainer = SFTTrainer(
-        model=args.model,
-        args=sft_config,
-        train_dataset=dataset,
-        peft_config=peft_config,
-    )
-    trainer.train()
-    trainer.save_model(args.output_dir)
+    p = argparse.ArgumentParser()
+    p.add_argument("--config", default="configs/sft.yaml")
+    p.add_argument("--data", default="data/sft.jsonl")
+    p.add_argument("--seed", type=int, required=True)
+    p.add_argument("--out", default="checkpoints/sft")
+    args = p.parse_args()
+    # TODO: load base model + LoRA (peft), TRL SFTTrainer, wandb logging,
+    #       every-200-step quick eval on 50 problems, save per-seed checkpoint.
+    raise NotImplementedError
 
 
 if __name__ == "__main__":

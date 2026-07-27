@@ -1,52 +1,40 @@
-"""Error taxonomy for generated code: the project's core analysis tool.
+"""Error taxonomy (v2 RQ2).
 
-Three failure classes:
-  - syntax_error : code does not parse (compile raises SyntaxError)
-  - runtime_error: parses and runs but raises an exception
-  - logic_error  : runs cleanly but a test assertion fails (wrong output)
+Classes: correct | syntax_error | runtime_error | logic_error | timeout
 
-Plus `correct` and `timeout`. The progression of these classes across
-SFT / DPO stages is a central finding of the writeup.
+Pipeline: compile check -> execute -> inspect exception type -> assertion fail.
+Must be human-validated on >=50 problems and the measured accuracy reported.
+Recorded at EVERY checkpoint (not just the final model) so error-type dynamics
+can be plotted against training step.
 """
 
 from __future__ import annotations
 
-from .safe_execute import run_with_stderr
-
 RUNTIME_EXCEPTIONS = {
-    "TypeError",
-    "IndexError",
-    "AttributeError",
-    "RecursionError",
-    "KeyError",
-    "ValueError",
-    "ZeroDivisionError",
-    "NameError",
-    "OverflowError",
-    "StopIteration",
+    "TypeError", "IndexError", "AttributeError", "RecursionError",
+    "KeyError", "ValueError", "ZeroDivisionError", "NameError",
+    "OverflowError", "StopIteration",
 }
 
+ErrorLabel = str  # one of the classes above
 
-def classify_error(code: str, test: str) -> str:
-    """Return one of: correct | syntax_error | runtime_error | logic_error | timeout."""
-    # 1. Does it even parse?
-    try:
-        compile(code, "<generated>", "exec")
-    except SyntaxError:
-        return "syntax_error"
 
-    # 2. Run against the test.
-    result = run_with_stderr(code, test)
-    if result.passed:
-        return "correct"
-    if result.timed_out:
-        return "timeout"
+def classify(code: str, test: str) -> ErrorLabel:
+    """Return the error class for a single (code, test) pair.
 
-    # 3. Distinguish runtime exceptions from assertion (logic) failures.
-    exc = result.exception_type
-    if exc == "AssertionError":
-        return "logic_error"
-    if exc in RUNTIME_EXCEPTIONS:
-        return "runtime_error"
-    # Unknown exception type: treat as runtime to be safe.
-    return "runtime_error" if exc else "logic_error"
+    TODO:
+      1. compile() -> SyntaxError => "syntax_error"
+      2. sandbox.run_one(code, test)
+      3. passed => "correct"; timed_out => "timeout"
+      4. exception_type == "AssertionError" => "logic_error"
+      5. exception_type in RUNTIME_EXCEPTIONS => "runtime_error"
+    """
+    raise NotImplementedError
+
+
+def validate_on_sample(labeled_examples) -> float:
+    """Compare classifier output against >=50 hand-labeled examples.
+
+    Returns accuracy; report this number in the repo/blog (RQ2 credibility).
+    """
+    raise NotImplementedError

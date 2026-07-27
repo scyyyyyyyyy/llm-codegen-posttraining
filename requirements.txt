@@ -1,9 +1,23 @@
+# Training / inference
 torch
 transformers
-trl
-peft
+trl              # SFTTrainer, GRPOTrainer, distillation
+peft             # LoRA
 datasets
 accelerate
-vllm
-evalplus
+vllm             # rollout generation + GRPO colocate
+
+# Eval
+evalplus         # HumanEval+ / MBPP+
+
+# Analysis / stats
+numpy
+scipy            # McNemar, power/MDE
+scikit-learn     # embeddings for contamination audit
+statsmodels      # Holm-Bonferroni, tests
+pandas
+matplotlib
+jupyter
+
+# Tracking
 wandb

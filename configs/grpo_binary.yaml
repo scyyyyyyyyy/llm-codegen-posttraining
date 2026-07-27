@@ -1,0 +1,24 @@
+# A2 -- GRPO with binary reward (L0). v2 §5.3
+base_model: Qwen/Qwen2.5-Coder-1.5B-Instruct
+init_checkpoint: checkpoints/sft   # A1
+
+reward:
+  type: binary
+  subsample_visible_tests: false
+
+grpo:
+  num_generations: 8          # G; hard prompts may bump to 16
+  temperature: 1.0
+  max_new_tokens: 512
+  learning_rate: 2.0e-6       # 1e-6 ~ 3e-6 (LoRA)
+  kl_coeff: 0.0               # raise to 1e-3 only if output degrades
+  inference_engine: vllm_colocate
+
+logging:
+  epr_stratified: true        # easy/medium/hard
+  quick_eval_every_steps: 200
+  quick_eval_problems: 50
+  checkpoint_every_steps: 200
+  length_bias_flag_pct: 50
+
+seeds: [0, 1, 2]

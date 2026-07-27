@@ -1,0 +1,21 @@
+# A4 -- On-policy distillation (L2, the dense limit). v2 §5.4
+student_model: Qwen/Qwen2.5-Coder-1.5B-Instruct
+teacher_model: Qwen/Qwen2.5-Coder-7B-Instruct   # same family => shared tokenizer
+init_checkpoint: checkpoints/sft                 # A1
+
+opd:
+  loss: reverse_kl            # completion tokens only (mode-seeking)
+  learning_rate: 1.0e-5       # LoRA
+  max_new_tokens: 512
+  token_budget_match: grpo    # align generated-token volume to GRPO arms
+  teacher_precision: fp16      # forward only, single-card batched scoring
+
+logging:
+  per_token_kl_curve: true    # RQ4 collapse analysis
+  quick_eval_every_steps: 200
+  quick_eval_problems: 50
+  checkpoint_every_steps: 200
+
+seeds: [0, 1, 2]
+
+# A5 (optional): run this AFTER an OPD checkpoint, then GRPO-partial (dense->sparse).

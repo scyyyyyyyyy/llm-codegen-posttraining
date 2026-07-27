@@ -1,16 +1,19 @@
+# A1 -- SFT (shared start for all RL/OPD arms). v2 §5.2
 base_model: Qwen/Qwen2.5-Coder-1.5B-Instruct
 
 lora:
   r: 16
   alpha: 32
-  target_modules: [q_proj, k_proj, v_proj, o_proj]
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
 
-training:
+train:
   learning_rate: 2.0e-4
-  per_device_train_batch_size: 4
-  gradient_accumulation_steps: 4   # effective batch = 16
-  num_train_epochs: 3
-  warmup_ratio: 0.05
   lr_scheduler_type: cosine
+  num_train_epochs: 3
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 4   # effective batch 16
   max_seq_length: 2048
   packing: true
+  warmup_ratio: 0.05
+
+seeds: [0, 1, 2]

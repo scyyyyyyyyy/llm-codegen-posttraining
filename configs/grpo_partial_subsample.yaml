@@ -1,0 +1,30 @@
+# A3' -- GRPO partial credit + visible-test subsampling (RQ3 Goodhart mitigation). v2 §5.3
+base_model: Qwen/Qwen2.5-Coder-1.5B-Instruct
+init_checkpoint: checkpoints/sft   # A1
+
+reward:
+  type: partial
+  compile_bonus: 0.1
+  no_runtime_error_bonus: 0.1
+  subsample_visible_tests: true     # reward on a random visible-test subset each step
+  visible_subset_size: 3            # e.g. MBPP's original 3 asserts
+
+grpo:
+  num_generations: 8
+  temperature: 1.0
+  max_new_tokens: 512
+  learning_rate: 2.0e-6
+  kl_coeff: 0.0
+  inference_engine: vllm_colocate
+
+eval:
+  held_out_tests: true              # measure hacking_gap = pass(visible) - pass(held_out)
+
+logging:
+  epr_stratified: true
+  quick_eval_every_steps: 200
+  quick_eval_problems: 50
+  checkpoint_every_steps: 200
+  length_bias_flag_pct: 50
+
+seeds: [0, 1, 2]
