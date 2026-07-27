@@ -1,94 +1,164 @@
-# The Reward Density Spectrum
+# The Reward Density Spectrum: Sparse vs. Dense Signals in Small-Model Code Post-training
 
-A compute-matched empirical study of **reward signal density** in small-model code
-post-training, on **Qwen2.5-Coder-1.5B-Instruct**. Three training signals sit on one
-axis — reward granularity:
+A compute-matched empirical study of how **reward signal density** shapes
+reinforcement learning and distillation for a small code model
+(**Qwen2.5-Coder-1.5B-Instruct**) on **HumanEval+** and **MBPP+**.
+
+> **Status.** Infrastructure and the zero-shot baselines (A0, A0') are complete and
+> reproducible. Training arms (SFT → GRPO → OPD) and the statistical analysis are in
+> progress; see [Roadmap](#roadmap).
+
+---
+
+## 1. Motivation
+
+Verifiable-reward RL (RLVR) with group-relative advantages (GRPO) is the dominant
+post-training recipe for code, but the reward it optimizes is almost always
+**binary** — a rollout scores 1 only if *every* unit test passes. Under GRPO's
+group-normalized advantage `A_i = (r_i − mean(r)) / std(r)`, a group whose rollouts
+all share the same reward contributes **zero gradient**. Binary reward triggers this
+at *both* ends: hard prompts where every rollout fails (all-zero) and easy prompts
+where every rollout passes (all-one). The effective training set silently shrinks
+from both ends toward the middle.
+
+This project treats reward granularity as a controllable axis and measures its
+consequences — signal availability, reward hacking, and diversity — rather than
+chasing a single headline pass@1.
+
+### The reward density spectrum
 
 | Level | Method | Reward granularity | Signal |
 |-------|--------|--------------------|--------|
-| L0 | GRPO + binary reward | whole trajectory {0,1} | all tests pass → 1 |
-| L1 | GRPO + partial credit | test-level, r = passed/total | continuous [0,1] |
-| L2 | On-policy distillation (OPD) | token-level | teacher per-token log-ratio |
+| **L0** | GRPO + binary reward | whole trajectory `{0,1}` | all tests pass → 1 |
+| **L1** | GRPO + partial credit | test-level, `r = passed/total` | continuous `[0,1]` |
+| **L2** | On-policy distillation (OPD) | token-level | teacher per-token log-ratio |
 
-## Research questions
+L2 is the dense limit: OPD can be viewed as a special case of dense,
+KL-constrained RL where the teacher's per-token log-ratio is an implicit reward.
 
-- **RQ1 — Gradient starvation.** Under GRPO's group-relative advantage, a group
-  with equal rewards yields zero gradient. Binary reward triggers this at *both*
-  ends (all-fail hard prompts, all-pass easy prompts). Measured by **EPR (Effective
-  Prompt Ratio)** — the signature metric.
-- **RQ2 — Error taxonomy dynamics.** How syntax/runtime/logic/timeout errors evolve
-  across training steps for each signal.
-- **RQ3 — Goodhart tax.** Partial credit is a proxy target; `hacking_gap =
-  pass(visible tests) − pass(held-out tests)`. IRT-weighted test scoring as a
+## 2. Research questions
+
+- **RQ1 — Gradient starvation.** Does pass@1 improvement track the fraction of
+  prompts that actually produce gradient? We measure the **Effective Prompt Ratio
+  (EPR)** — the share of prompt-groups with non-zero reward variance — over training,
+  stratified by difficulty.
+- **RQ2 — Error-type dynamics.** Which failure modes (syntax / runtime / logic /
+  timeout) does each signal repair, tracked *per checkpoint* rather than only at the end?
+- **RQ3 — The Goodhart tax of dense reward.** Partial credit is a proxy objective.
+  We compute reward on a *visible* test subset and evaluate on *held-out* tests:
+  `hacking_gap = pass(visible) − pass(held-out)`, and test IRT-weighted scoring as a
   principled mitigation.
-- **RQ4 — Diversity ceiling.** pass@k (k=1,4,16,64) and a teacher–student win matrix:
-  does dense signal sharpen or genuinely extend ability?
+- **RQ4 — Diversity ceiling.** Does dense signal sharpen or genuinely extend ability?
+  Measured via pass@k (k = 1, 4, 16, 64) and a teacher–student win matrix.
 
-## Experiment matrix
+## 3. Experimental design
 
-`A0` student baseline · `A0'` teacher (7B) baseline · `A1` SFT (shared start) ·
-`A2` GRPO-binary · `A3` GRPO-partial · `A3'` +test subsampling · `A4` OPD ·
-`A5` (optional) OPD→GRPO. Every arm: 3 seeds, same prompt set, same SFT start,
-budget aligned by generated tokens.
+**Models.** Student `Qwen2.5-Coder-1.5B-Instruct`; teacher `Qwen2.5-Coder-7B-Instruct`.
 
-## Layout
+**Arms.** `A0` student baseline · `A0'` teacher baseline · `A1` SFT (shared start) ·
+`A2` GRPO-binary · `A3` GRPO-partial · `A3'` + visible-test subsampling · `A4` OPD ·
+`A5` OPD→GRPO. Every arm uses the same prompt set and SFT start, with budget aligned
+by generated tokens (GPU-hours also reported). 3 seeds per arm.
+
+**Benchmarks (evaluation only).** HumanEval+ (164) and MBPP+ (378), EvalPlus suite.
+These never enter any training pool.
+
+**Data (contamination-safe).** Training prompts drawn from MBPP's train split and
+function-style TACO/APPS subsets, each with executable tests. A near-duplicate audit
+(signature match + statement-embedding similarity) removes anything close to the
+evaluation sets, and reports the number removed.
+
+**Statistics.** Problem-level paired bootstrap (95% CI), McNemar, per-difficulty
+stratified CIs, and a power/MDE analysis, following a "treat evals as statistical
+estimation" stance.
+
+## 4. Results
+
+### 4.1 Zero-shot baselines (A0 / A0', greedy pass@1)
+
+*A0 = Qwen2.5-Coder-1.5B-Instruct.* pass@1 by difficulty is on the `+` (harder)
+test set. Difficulty is a documented proxy (terciles of canonical-solution LOC;
+EvalPlus ships no official labels).
+
+| Benchmark | pass@1 (base) | pass@1 (plus) | easy | medium | hard |
+|-----------|:---:|:---:|:---:|:---:|:---:|
+| HumanEval+ | 71.3% | 65.2% | 70.6% | 66.7% | 54.8% |
+| MBPP+      | 69.6% | 59.0% | 70.4% | 62.1% | 39.8% |
+
+**Error breakdown of the greedy A0 sample** (base tests):
+
+| Benchmark | correct | syntax | runtime | logic | timeout |
+|-----------|:---:|:---:|:---:|:---:|:---:|
+| HumanEval+ | 69.5% | 0.0% | 5.5% | 25.0% | 0.0% |
+| MBPP+      | 69.0% | 0.0% | 5.0% | 25.9% | 0.0% |
+
+### 4.2 Findings so far
+
+1. **A steep difficulty gradient, especially on MBPP+** (hard = 39.8% vs. easy
+   70.4%). The hard tier is exactly the regime where binary reward degenerates to an
+   all-zero signal — the motivating case for partial credit (RQ1).
+2. **Syntax errors are already ~0%** on both benchmarks. A strong instruct base makes
+   essentially no parse errors, so the common "SFT eliminates syntax errors" narrative
+   does not apply here — a finding worth stating plainly.
+3. **Logic errors are the dominant and stable failure mode (~25%)** across both
+   benchmarks. This — not syntax — is the headroom that RL and distillation must
+   address (RQ2).
+
+*(pass@k, A0', and all training arms are being collected; this section will grow.)*
+
+## 5. Repository layout
 
 ```
 data/   build_prompt_pool.py · contamination_audit.py · build_sft_data.py
 train/  sft.py · grpo.py · opd.py
-eval/   sandbox.py · error_classify.py · rewards.py · epr.py · run_eval.py
+eval/   sandbox.py · error_classify.py · rewards.py · epr.py
+        run_eval.py · run_a0.py · verify_pipeline.py · difficulty.py
 analysis/ stats.py + reproduction notebook
 configs/  sft · grpo_binary · grpo_partial · grpo_partial_subsample · opd
+scripts/  run_a0.sh
+docs/     autodl.md   (GPU setup)
 ```
 
-## Pipeline
+Core eval modules run on CPU; generation/scoring run on GPU (see `docs/autodl.md`).
+
+## 6. Reproduction
 
 ```bash
-pip install -r requirements.txt            # core: vllm + evalplus (eval + generation)
-pip install -r requirements-train.txt      # + training stack (SFT/GRPO/OPD)
-pip install -r requirements-analysis.txt   # + local stats/plots/notebooks
+pip install -r requirements.txt            # core: vllm + evalplus==0.3.1
+pip install -r requirements-train.txt      # + training stack (A1+)
+pip install -r requirements-analysis.txt   # + local stats/plots
 
-# 1. contamination-safe data (eval sets NEVER enter training)
-python data/build_prompt_pool.py --out data/prompt_pool.jsonl
-python data/contamination_audit.py --pool data/prompt_pool.jsonl
-python data/build_sft_data.py --pool data/prompt_pool.clean.jsonl
-
-# 2. shared SFT start (A1), then the arms
-python train/sft.py  --config configs/sft.yaml --seed 0
-python train/grpo.py --config configs/grpo_binary.yaml  --reward binary  --seed 0
-python train/grpo.py --config configs/grpo_partial.yaml --reward partial --seed 0
-python train/opd.py  --config configs/opd.yaml --seed 0
-
-# 3. eval + statistics (see A0 below for the baseline path)
-```
-
-## A0 / A0' baselines
-
-Zero-shot baselines for the student (A0) and 7B teacher (A0'): pass@1 (base +
-plus), pass@k (k=1,4,16,64), error breakdown, and difficulty stratification.
-
-```bash
-# (a) CPU-only Week-1 gate: canonical solutions must pass 100%, classifier sane
+# CPU gate: canonical solutions must pass 100%, classifier must be sane
 python -m eval.verify_pipeline --n 164
 
-# (b) GPU (AutoDL): generation + scoring + collection, per dataset
-MODEL=Qwen/Qwen2.5-Coder-1.5B-Instruct TAG=qwen1.5b bash scripts/run_a0.sh   # A0
-MODEL=Qwen/Qwen2.5-Coder-7B-Instruct   TAG=qwen7b   bash scripts/run_a0.sh   # A0'
-# -> results/a0_<tag>_<dataset>.json
+# A0 / A0' baselines (GPU; see docs/autodl.md)
+MODEL=Qwen/Qwen2.5-Coder-1.5B-Instruct TAG=qwen1.5b bash scripts/run_a0.sh
+MODEL=Qwen/Qwen2.5-Coder-7B-Instruct   TAG=qwen7b   bash scripts/run_a0.sh
+# -> results/a0_<tag>_<dataset>.json  (pass@1, pass@k, error breakdown, difficulty)
 ```
 
-Headline pass@1/pass@k come from evalplus's own evaluator; the error breakdown and
-difficulty layers are added by `eval/run_a0.py`. Note: EvalPlus ships no official
-difficulty labels — `eval/difficulty.py` derives a documented proxy (terciles of
-canonical-solution LOC). The evalplus executor needs Linux; on macOS its
-`setrlimit` path fails, so run scoring on the GPU box (our own `eval/sandbox.py`
-guards that and works anywhere for the classifier).
+## 7. Scope and limitations
 
-## What makes this not a toy
+This is the smallest meaningful configuration: a 1.5B model, LoRA, and function-level
+benchmarks. Conclusions are about *mechanism* at small scale and are not claimed to
+extrapolate to large models or agentic coding. The value is in measurable signal
+availability (EPR), a two-sided reward-density trade-off (starvation vs. Goodhart),
+statistical rigor, and an explicit contamination audit — on a \$0–300 budget.
 
-Measurable mechanism (EPR), a two-sided conclusion (starvation vs Goodhart
-trade-off), statistical rigor (3 seeds, problem-level paired bootstrap, stratified
-CIs, MDE/power), and an explicit contamination audit — all on a $0–300 budget.
+## <a name="roadmap"></a>8. Roadmap
 
-**Scope:** smallest configuration (1.5B + LoRA + function-level benchmarks);
-conclusions are not claimed to extrapolate to large or agentic-coding scale.
+- [x] Eval infrastructure: sandbox, error taxonomy, reward functions, pass@k
+- [x] Contamination-safe eval verification (164/164 ground-truth, classifier checks)
+- [x] A0 student baseline (HumanEval+ / MBPP+)
+- [ ] A0' teacher baseline · pass@k for A0/A0'
+- [ ] A1 SFT (distilled from teacher) + error dynamics
+- [ ] A2/A3/A3' GRPO arms + EPR curves (RQ1, RQ3)
+- [ ] A4 OPD + teacher–student win matrix (RQ4)
+- [ ] Statistical analysis + writeup
+
+## References
+
+GRPO (Shao et al., 2024) · DAPO dynamic sampling (Yu et al., 2025) · On-policy
+distillation / GKD (Agarwal et al., 2024), MiniLLM (Gu et al., 2024) · EvalPlus
+(Liu et al., 2023) · Qwen2.5-Coder (Hui et al., 2024) · reward gaming (Skalse et al.,
+2022) · error bars for evals (Miller, 2024).
