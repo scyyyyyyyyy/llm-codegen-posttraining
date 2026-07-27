@@ -31,13 +31,22 @@ newest_results() { ls -t "$1"/*eval_results.json 2>/dev/null | head -1; }
 
 gen_eval() {   # $1=dataset  $2=mode(greedy|passk)  $3=root
   local dataset="$1" mode="$2" root="$3"
+  # vLLM's engine can throw during SHUTDOWN teardown (e.g. libnvrtc.so.13 missing
+  # on CUDA 12 images) AFTER the samples file is already written. Don't let that
+  # nonzero exit abort the pipeline; verify the output file instead.
+  set +e
   if [ "$mode" = "greedy" ]; then
     python -m evalplus.codegen "$MODEL" "$dataset" --greedy --backend vllm --tp "$TP" --root "$root"
   else
     python -m evalplus.codegen "$MODEL" "$dataset" --n_samples "$NSAMPLES" \
         --temperature "$TEMP" --backend vllm --tp "$TP" --root "$root"
   fi
+  set -e
   local raw; raw="$(newest_samples "${root}/${dataset}")"
+  if [ -z "$raw" ]; then
+    echo "ERROR: codegen produced no samples in ${root}/${dataset}" >&2
+    return 1
+  fi
   python -m evalplus.sanitize --samples "$raw" >/dev/null
   local san="${raw%.jsonl}-sanitized.jsonl"
   [ -f "$san" ] || san="$raw"       # fall back if sanitize named it differently
