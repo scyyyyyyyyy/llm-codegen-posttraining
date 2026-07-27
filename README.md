@@ -44,7 +44,9 @@ configs/  sft · grpo_binary · grpo_partial · grpo_partial_subsample · opd
 ## Pipeline
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt            # core: vllm + evalplus (eval + generation)
+pip install -r requirements-train.txt      # + training stack (SFT/GRPO/OPD)
+pip install -r requirements-analysis.txt   # + local stats/plots/notebooks
 
 # 1. contamination-safe data (eval sets NEVER enter training)
 python data/build_prompt_pool.py --out data/prompt_pool.jsonl

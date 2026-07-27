@@ -1,0 +1,7 @@
+# Training stack (SFT / GRPO / OPD). Install on the GPU box on top of
+# requirements.txt:  pip install -r requirements-train.txt
+trl
+peft
+accelerate
+datasets
+wandb>=0.18          # <0.16 pulls pathtools, which needs the removed `imp` module on Py3.12

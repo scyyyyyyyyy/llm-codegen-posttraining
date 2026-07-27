@@ -1,0 +1,9 @@
+# Local analysis: statistics + plots + notebooks (analysis/). CPU only.
+#   pip install -r requirements-analysis.txt
+numpy
+scipy
+scikit-learn        # embeddings for contamination audit
+statsmodels         # McNemar, Holm-Bonferroni, power/MDE
+pandas
+matplotlib
+jupyter

@@ -1,23 +1,6 @@
-# Training / inference
-torch
-transformers
-trl              # SFTTrainer, GRPOTrainer, distillation
-peft             # LoRA
-datasets
-accelerate
-vllm             # rollout generation + GRPO colocate
-
-# Eval
-evalplus         # HumanEval+ / MBPP+
-
-# Analysis / stats
-numpy
-scipy            # McNemar, power/MDE
-scikit-learn     # embeddings for contamination audit
-statsmodels      # Holm-Bonferroni, tests
-pandas
-matplotlib
-jupyter
-
-# Tracking
-wandb
+# Core: evaluation + generation (A0 baseline, all eval/ modules).
+# vllm brings a matching torch + transformers + numpy.
+# Python 3.12 safe. For training add requirements-train.txt; for local
+# statistics/plots add requirements-analysis.txt.
+vllm
+evalplus
