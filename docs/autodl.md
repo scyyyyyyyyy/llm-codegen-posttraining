@@ -37,6 +37,10 @@ Notes / gotchas that already bit us:
 - **Do NOT install `requirements-train.txt` for A0.** `wandb`'s old deps pull
   `pathtools`, which needs the removed `imp` module on Python 3.12 and aborts the
   whole install. Training deps are only needed for A1+.
+- **HF Xet 401 on the 7B model.** hf-mirror does not proxy HF's Xet/CAS server
+  (`xethub.hf.co`), so newer repos fail with `401 Unauthorized`. `scripts/run_a0.sh`
+  exports `HF_HUB_DISABLE_XET=1` to force classic LFS downloads via the mirror; set it
+  yourself for manual `evalplus.codegen` / `hf download` runs.
 
 ## 4. Verify the eval pipeline (CPU, ~1 min)
 

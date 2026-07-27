@@ -26,6 +26,9 @@ DATASETS="${DATASETS:-humaneval mbpp}"   # override e.g. DATASETS=mbpp
 PARALLEL="${PARALLEL:-8}"        # evalplus eval workers; too high OOMs the pool on pass@k
 
 export HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
+# hf-mirror does not proxy HF's Xet/CAS server (xethub.hf.co) -> 401 on newer
+# repos (e.g. the 7B). Disable Xet so downloads fall back to classic LFS via mirror.
+export HF_HUB_DISABLE_XET="${HF_HUB_DISABLE_XET:-1}"
 
 # newest samples .jsonl in a dir, ignoring sanitized / results files
 newest_samples() { ls -t "$1"/*.jsonl 2>/dev/null | grep -v -e sanitized -e eval_results | head -1; }
@@ -61,12 +64,14 @@ gen_eval() {   # $1=dataset  $2=mode(greedy|passk)  $3=root
 
 for DATASET in $DATASETS; do
   echo "############ ${DATASET} :: ${TAG} ############"
-  GREEDY_RESULTS="$(gen_eval "$DATASET" greedy "${ROOT}/greedy")"
+  # Tag-scoped roots so different models never share a samples dir (a failed run
+  # must NOT silently pick up another model's leftover samples).
+  GREEDY_RESULTS="$(gen_eval "$DATASET" greedy "${ROOT}/${TAG}/greedy")"
   echo "greedy results: ${GREEDY_RESULTS}"
 
   PASSK_ARG=()
   if [ "$DO_PASSK" = "1" ]; then
-    PASSK_RESULTS="$(gen_eval "$DATASET" passk "${ROOT}/passk")"
+    PASSK_RESULTS="$(gen_eval "$DATASET" passk "${ROOT}/${TAG}/passk")"
     echo "pass@k results: ${PASSK_RESULTS}"
     PASSK_ARG=(--passk-results "${PASSK_RESULTS}")
   fi
