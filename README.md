@@ -57,9 +57,30 @@ python train/grpo.py --config configs/grpo_binary.yaml  --reward binary  --seed 
 python train/grpo.py --config configs/grpo_partial.yaml --reward partial --seed 0
 python train/opd.py  --config configs/opd.yaml --seed 0
 
-# 3. eval + statistics
-python eval/run_eval.py --model checkpoints/grpo --dataset humaneval_plus --mode passk
+# 3. eval + statistics (see A0 below for the baseline path)
 ```
+
+## A0 / A0' baselines
+
+Zero-shot baselines for the student (A0) and 7B teacher (A0'): pass@1 (base +
+plus), pass@k (k=1,4,16,64), error breakdown, and difficulty stratification.
+
+```bash
+# (a) CPU-only Week-1 gate: canonical solutions must pass 100%, classifier sane
+python -m eval.verify_pipeline --n 164
+
+# (b) GPU (AutoDL): generation + scoring + collection, per dataset
+MODEL=Qwen/Qwen2.5-Coder-1.5B-Instruct TAG=qwen1.5b bash scripts/run_a0.sh   # A0
+MODEL=Qwen/Qwen2.5-Coder-7B-Instruct   TAG=qwen7b   bash scripts/run_a0.sh   # A0'
+# -> results/a0_<tag>_<dataset>.json
+```
+
+Headline pass@1/pass@k come from evalplus's own evaluator; the error breakdown and
+difficulty layers are added by `eval/run_a0.py`. Note: EvalPlus ships no official
+difficulty labels — `eval/difficulty.py` derives a documented proxy (terciles of
+canonical-solution LOC). The evalplus executor needs Linux; on macOS its
+`setrlimit` path fails, so run scoring on the GPU box (our own `eval/sandbox.py`
+guards that and works anywhere for the classifier).
 
 ## What makes this not a toy
 

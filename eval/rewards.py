@@ -10,21 +10,34 @@ uses held-out tests. `hacking_gap = pass(visible) - pass(held_out)`.
 
 from __future__ import annotations
 
+from .sandbox import (
+    precheck_compiles,
+    run_one,
+    runs_without_exception,
+)
+
 COMPILE_BONUS = 0.1
 NO_RUNTIME_ERROR_BONUS = 0.1
 
 
-def binary_reward(code: str, tests: list[str]) -> float:
-    """L0: 1.0 iff every test passes, else 0.0. TODO: sandbox.passes_all."""
-    raise NotImplementedError
+def binary_reward(code: str, tests: list[str], entry_point: str | None = None) -> float:
+    """L0: 1.0 iff every test passes, else 0.0."""
+    if not tests:
+        return 0.0
+    return 1.0 if all(run_one(code, t, entry_point).passed for t in tests) else 0.0
 
 
-def partial_reward(code: str, tests: list[str]) -> float:
-    """L1: (#passed / #tests) + compile & no-runtime-error bonuses, capped at 1.0.
-
-    TODO: run each test via sandbox; add COMPILE_BONUS / NO_RUNTIME_ERROR_BONUS.
-    """
-    raise NotImplementedError
+def partial_reward(code: str, tests: list[str], entry_point: str | None = None) -> float:
+    """L1: (#passed / #tests) + compile & no-runtime-error bonuses, capped at 1.0."""
+    if not tests:
+        return 0.0
+    passed = sum(run_one(code, t, entry_point).passed for t in tests)
+    base = passed / len(tests)
+    compile_bonus = COMPILE_BONUS if precheck_compiles(code) else 0.0
+    runtime_bonus = (
+        NO_RUNTIME_ERROR_BONUS if runs_without_exception(code, entry_point) else 0.0
+    )
+    return min(1.0, base + compile_bonus + runtime_bonus)
 
 
 class IRTTestWeights:
