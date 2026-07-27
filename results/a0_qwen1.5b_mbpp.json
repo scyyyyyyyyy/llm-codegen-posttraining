@@ -1,0 +1,48 @@
+{
+  "arm": "A0",
+  "dataset": "mbpp",
+  "tag": "qwen1.5b",
+  "n_tasks": 378,
+  "pass@1_base": 0.6957671957671958,
+  "pass@1_plus": 0.58994708994709,
+  "pass@1_plus_by_difficulty": {
+    "easy": 0.7037037037037037,
+    "medium": 0.6212121212121212,
+    "hard": 0.3983739837398374
+  },
+  "error_breakdown": {
+    "correct": 69.04761904761905,
+    "syntax_error": 0.0,
+    "runtime_error": 5.026455026455026,
+    "logic_error": 25.925925925925927,
+    "timeout": 0.0
+  },
+  "error_breakdown_by_difficulty": {
+    "easy": {
+      "correct": 77.77777777777777,
+      "syntax_error": 0.0,
+      "runtime_error": 2.1164021164021163,
+      "logic_error": 20.105820105820104,
+      "timeout": 0.0
+    },
+    "medium": {
+      "correct": 74.24242424242425,
+      "syntax_error": 0.0,
+      "runtime_error": 6.0606060606060606,
+      "logic_error": 19.696969696969695,
+      "timeout": 0.0
+    },
+    "hard": {
+      "correct": 52.84552845528455,
+      "syntax_error": 0.0,
+      "runtime_error": 8.94308943089431,
+      "logic_error": 38.21138211382114,
+      "timeout": 0.0
+    }
+  },
+  "difficulty_counts": {
+    "easy": 189,
+    "medium": 66,
+    "hard": 123
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "arm": "A0",
+  "dataset": "humaneval",
+  "tag": "qwen1.5b",
+  "n_tasks": 164,
+  "pass@1_base": 0.7134146341463414,
+  "pass@1_plus": 0.6585365853658537,
+  "pass@1_plus_by_difficulty": {
+    "easy": 0.7205882352941176,
+    "medium": 0.6666666666666666,
+    "hard": 0.5476190476190477
+  },
+  "error_breakdown": {
+    "correct": 69.51219512195122,
+    "syntax_error": 0.0,
+    "runtime_error": 5.487804878048781,
+    "logic_error": 25.0,
+    "timeout": 0.0
+  },
+  "error_breakdown_by_difficulty": {
+    "easy": {
+      "correct": 72.05882352941177,
+      "syntax_error": 0.0,
+      "runtime_error": 5.882352941176471,
+      "logic_error": 22.058823529411764,
+      "timeout": 0.0
+    },
+    "medium": {
+      "correct": 70.37037037037037,
+      "syntax_error": 0.0,
+      "runtime_error": 3.7037037037037037,
+      "logic_error": 25.925925925925927,
+      "timeout": 0.0
+    },
+    "hard": {
+      "correct": 64.28571428571429,
+      "syntax_error": 0.0,
+      "runtime_error": 7.142857142857143,
+      "logic_error": 28.571428571428573,
+      "timeout": 0.0
+    }
+  },
+  "difficulty_counts": {
+    "easy": 68,
+    "medium": 54,
+    "hard": 42
+  },
+  "pass@k_plus": {
+    "1": 0.602610518292683,
+    "4": 0.7854776292248078,
+    "16": 0.8752434634039907,
+    "64": 0.9146341463414634
+  }
+}

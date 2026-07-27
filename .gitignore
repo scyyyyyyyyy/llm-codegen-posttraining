@@ -19,9 +19,10 @@ data/*.json
 
 # Eval / analysis outputs
 analysis/*.ipynb_checkpoints/
+# keep small result summaries under version control; ignore bulky raw outputs
 results/*
 !results/.gitkeep
-!results/*.json          # keep small result summaries under version control
+!results/*.json
 
 # OS
 .DS_Store
