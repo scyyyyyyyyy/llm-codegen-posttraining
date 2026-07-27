@@ -88,6 +88,18 @@ def samples_from_results(path: str) -> dict[str, list[str]]:
     }
 
 
+def task_test(t: dict) -> tuple[str, str | None]:
+    """Return (test_source, entry_point_to_drive) for a task.
+
+    HumanEval+ ships a `check(candidate)` function in `test` -> drive it with a
+    trailing `check(entry_point)` call. MBPP+ ships plain `assert` statements in
+    `assertion` that call the function directly -> run as-is, no driver.
+    """
+    if t.get("test"):
+        return t["test"], t["entry_point"]
+    return t.get("assertion", ""), None
+
+
 def error_breakdown(tasks: dict, greedy_samples: dict[str, list[str]]) -> dict[str, float]:
     """Classify the greedy (first) sample of each task against its base test."""
     labels = []
@@ -95,7 +107,8 @@ def error_breakdown(tasks: dict, greedy_samples: dict[str, list[str]]) -> dict[s
         sols = greedy_samples.get(tid)
         if not sols:
             continue
-        labels.append(classify(sols[0], t["test"], entry_point=t["entry_point"]))
+        test_src, ep = task_test(t)
+        labels.append(classify(sols[0], test_src, entry_point=ep))
     return breakdown(labels)
 
 
