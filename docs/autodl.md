@@ -31,6 +31,15 @@ source /etc/network_turbo          # AutoDL academic acceleration (model/dataset
 pip install -r requirements.txt    # vllm + evalplus==0.3.1
 ```
 
+**Put the HF cache on the DATA disk.** AutoDL's system disk (`/`, ~30 GB) is small;
+the default `~/.cache/huggingface` lives there and fills up on the 7B model (~15 GB),
+stalling downloads with "Not enough free disk space". Point it at the 50 GB data disk
+in every shell that downloads or runs a model:
+
+```bash
+export HF_HOME=/root/autodl-tmp/hf
+```
+
 Notes / gotchas that already bit us:
 - **`evalplus` must be 0.3.1** (pinned). Unpinned, pip resolves to 0.2.1, which has
   no `codegen` CLI → `No module named evalplus.codegen`.
