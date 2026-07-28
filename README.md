@@ -74,23 +74,32 @@ estimation" stance.
 
 ## 4. Results
 
-### 4.1 Zero-shot baselines (A0 / A0', greedy pass@1)
+### 4.1 Zero-shot baselines (A0 student / A0' teacher, greedy pass@1)
 
-*A0 = Qwen2.5-Coder-1.5B-Instruct.* pass@1 by difficulty is on the `+` (harder)
-test set. Difficulty is a documented proxy (terciles of canonical-solution LOC;
-EvalPlus ships no official labels).
+pass@1 by difficulty is on the `+` (harder) test set. Difficulty is a documented
+proxy (terciles of canonical-solution LOC; EvalPlus ships no official labels).
 
-| Benchmark | pass@1 (base) | pass@1 (plus) | easy | medium | hard |
-|-----------|:---:|:---:|:---:|:---:|:---:|
-| HumanEval+ | 71.3% | 65.2% | 70.6% | 66.7% | 54.8% |
-| MBPP+      | 69.6% | 59.0% | 70.4% | 62.1% | 39.8% |
+| Model | Benchmark | pass@1 base | pass@1 plus | easy | medium | hard |
+|-------|-----------|:---:|:---:|:---:|:---:|:---:|
+| **A0** 1.5B | HumanEval+ | 71.3% | 65.2% | 70.6% | 66.7% | 54.8% |
+| **A0** 1.5B | MBPP+      | 69.6% | 59.0% | 70.4% | 62.1% | 39.8% |
+| **A0'** 7B | HumanEval+ | 91.5% | 87.2% | 92.6% | 88.9% | 76.2% |
+| **A0'** 7B | MBPP+      | 82.8% | 72.0% | 84.1% | 69.7% | 54.5% |
 
-**Error breakdown of the greedy A0 sample** (base tests):
+The **student→teacher gap** (+22 pts on HumanEval+, +13 on MBPP+) is the ceiling
+post-training targets and the OPD reference.
 
-| Benchmark | correct | syntax | runtime | logic | timeout |
-|-----------|:---:|:---:|:---:|:---:|:---:|
-| HumanEval+ | 69.5% | 0.0% | 5.5% | 25.0% | 0.0% |
-| MBPP+      | 69.0% | 0.0% | 5.0% | 25.9% | 0.0% |
+**Error breakdown** (greedy, base tests):
+
+| Model | Benchmark | correct | syntax | runtime | logic | timeout |
+|-------|-----------|:---:|:---:|:---:|:---:|:---:|
+| A0 1.5B | HumanEval+ | 69.5% | 0.0% | 5.5% | 25.0% | 0.0% |
+| A0 1.5B | MBPP+      | 69.0% | 0.0% | 5.0% | 25.9% | 0.0% |
+| A0' 7B | HumanEval+ | 90.2% | 0.0% | 2.4% | 7.3% | 0.0% |
+| A0' 7B | MBPP+      | 82.3% | 0.0% | 2.9% | 14.8% | 0.0% |
+
+**pass@k (plus, temp 0.8, n=64).** A0' 7B: HumanEval+ 82.3/91.0/93.7/94.5%,
+MBPP+ 67.2/80.5/86.3/89.4% (k=1/4/16/64). A0 1.5B pass@k pending a batched rerun.
 
 ### 4.2 Findings so far
 
@@ -104,7 +113,7 @@ EvalPlus ships no official labels).
    benchmarks. This — not syntax — is the headroom that RL and distillation must
    address (RQ2).
 
-*(pass@k, A0', and all training arms are being collected; this section will grow.)*
+*(Training arms A1+ are next; this section will grow.)*
 
 ## 5. Repository layout
 
@@ -150,7 +159,8 @@ statistical rigor, and an explicit contamination audit — on a \$0–300 budget
 - [x] Eval infrastructure: sandbox, error taxonomy, reward functions, pass@k
 - [x] Contamination-safe eval verification (164/164 ground-truth, classifier checks)
 - [x] A0 student baseline (HumanEval+ / MBPP+)
-- [ ] A0' teacher baseline · pass@k for A0/A0'
+- [x] A0' teacher baseline + pass@k
+- [ ] pass@k for A0 (student)
 - [ ] A1 SFT (distilled from teacher) + error dynamics
 - [ ] A2/A3/A3' GRPO arms + EPR curves (RQ1, RQ3)
 - [ ] A4 OPD + teacher–student win matrix (RQ4)

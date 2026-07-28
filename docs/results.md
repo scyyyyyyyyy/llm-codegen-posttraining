@@ -36,7 +36,37 @@ base pass@1 66.4% / pass@10 90.6%; plus pass@1 60.3% / pass@10 85.2%.
 
 ## A0' — teacher baseline (Qwen2.5-Coder-7B-Instruct, zero-shot)
 
-_Pending (run in progress)._
+Greedy pass@1 + pass@k (temperature 0.8, n=64).
+
+| Benchmark | pass@1 (base) | pass@1 (plus) | easy | medium | hard |
+|-----------|:---:|:---:|:---:|:---:|:---:|
+| HumanEval+ | 91.5% | 87.2% | 92.6% | 88.9% | 76.2% |
+| MBPP+      | 82.8% | 72.0% | 84.1% | 69.7% | 54.5% |
+
+Error breakdown (greedy, base tests):
+
+| Benchmark | correct | syntax | runtime | logic | timeout |
+|-----------|:---:|:---:|:---:|:---:|:---:|
+| HumanEval+ | 90.2% | 0.0% | 2.4% | 7.3% | 0.0% |
+| MBPP+      | 82.3% | 0.0% | 2.9% | 14.8% | 0.0% |
+
+pass@k (plus): HumanEval+ 82.3 / 91.0 / 93.7 / 94.5% (k=1/4/16/64);
+MBPP+ 67.2 / 80.5 / 86.3 / 89.4%.
+
+## Student vs. teacher (pass@1 plus, greedy)
+
+| | 1.5B (A0) | 7B (A0') | gap |
+|---|:---:|:---:|:---:|
+| HumanEval+ | 65.2% | 87.2% | +22.0 |
+| MBPP+      | 59.0% | 72.0% | +13.0 |
+
+The gap is the ceiling that post-training targets — and it is almost entirely
+**logic errors**: the 7B cuts logic errors from ~25% to 7–15% while syntax stays
+at 0% for both. This directly frames the project: the headroom is logic, not syntax.
+
+## A1+ — training arms
+
+_Pending._
 
 ## A1+ — training arms
 
