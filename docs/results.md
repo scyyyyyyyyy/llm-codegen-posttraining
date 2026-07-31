@@ -64,10 +64,35 @@ The gap is the ceiling that post-training targets — and it is almost entirely
 **logic errors**: the 7B cuts logic errors from ~25% to 7–15% while syntax stays
 at 0% for both. This directly frames the project: the headroom is logic, not syntax.
 
-## A1+ — training arms
+## A1 — SFT cold-start (seed 0, first result)
 
-_Pending._
+Training pool after pre-filter + contamination audit: 455 → 392 clean prompts
+(63 removed on 13-gram overlap). Teacher rejection sampling yielded 255 verified
+SFT examples. SFT (LoRA r=32, 3 epochs) trained cleanly: loss 0.18 → 0.07,
+token accuracy 0.98, entropy 0.25 → 0.07.
 
-## A1+ — training arms
+**EPR@init (headline metric), on the 392-prompt pool, G=8, temp 1.0:**
+
+| | mean group reward | EPR@init |
+|---|:---:|:---:|
+| base (pre-SFT) | 0.319 | 58.4% |
+| A1 (post-SFT)  | 0.584 | 32.9% |
+
+**Finding (refutes H1, and is more interesting than H1).** SFT raised competence
+(mean reward 0.32 → 0.58) but **lowered** EPR@init (58% → 33%). A stronger cold-start
+does not monotonically increase the gradient-producing prompt fraction: SFT
+saturates easy prompts into all-pass (zero-variance) groups faster than it rescues
+hard prompts from all-fail, and it sharpens the output distribution (entropy
+0.25 → 0.07), reducing rollout diversity — both push prompts out of the learnable
+zone. This is the reward-density spectrum's easy-end zero-gradient + diversity-
+collapse mechanism, observed directly. Implication: a better SFT init can *shrink*
+the learnable set for the subsequent RL.
+
+Caveats: single seed; to confirm the diversity-collapse channel, compare against the
+diversity-preserving variant (sft_div) and inspect pass@1 vs pass@64 on the A1
+checkpoint. Next: full A1 eval (pass@1 / difficulty / error breakdown / pass@k) +
+seeds 1–2 + the diversity/learnability ablations.
+
+## A2+ — RL / OPD arms
 
 _Pending._
