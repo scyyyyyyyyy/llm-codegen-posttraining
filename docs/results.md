@@ -88,10 +88,37 @@ zone. This is the reward-density spectrum's easy-end zero-gradient + diversity-
 collapse mechanism, observed directly. Implication: a better SFT init can *shrink*
 the learnable set for the subsequent RL.
 
-Caveats: single seed; to confirm the diversity-collapse channel, compare against the
-diversity-preserving variant (sft_div) and inspect pass@1 vs pass@64 on the A1
-checkpoint. Next: full A1 eval (pass@1 / difficulty / error breakdown / pass@k) +
-seeds 1–2 + the diversity/learnability ablations.
+**Held-out eval (greedy pass@1, A0 / A1 / A0').**
+
+| pass@1 (plus) | HumanEval+ | MBPP+ |
+|---|:---:|:---:|
+| A0 (base 1.5B) | 65.2% | 59.0% |
+| A1 (SFT) | **72.6%** | **60.8%** |
+| A0' (7B teacher) | 87.2% | 72.0% |
+
+| logic error (base) | HumanEval+ | MBPP+ |
+|---|:---:|:---:|
+| A0 | 25.0% | 25.9% |
+| A1 | **17.7%** | **22.2%** |
+| A0' | 7.3% | 14.8% |
+
+A1 difficulty (plus): HumanEval+ easy 77.9 / med 75.9 / hard 59.5; MBPP+ easy 73.0
+/ med 62.1 / hard 41.5.
+
+**H2 supported:** SFT raises competence and cuts logic errors (HE+ 25→17.7, MBPP+
+26→22) while syntax stays 0%. A1 closes ~34% of the student→teacher gap on
+HumanEval+ (+7.4) but only ~14% on MBPP+ (+1.8) — the asymmetry is plausibly
+because the contamination audit removed MBPP-train items near the MBPP+ eval set,
+so the MBPP+ gain is uninflated (a sign the audit worked), while HumanEval+ gains
+are pure generalization from the distilled data.
+
+**Net A1 story:** SFT works (competence ↑, logic errors ↓) but at a cost — it
+*lowers* EPR@init (easy-prompt saturation + distribution sharpening), shrinking the
+learnable set and diversity for the subsequent RL. This tension (competence vs
+gradient-availability/diversity) is the through-line into A2/A3 (RL) and A4 (OPD).
+
+Caveats: single seed; pass@k (to confirm diversity collapse), seeds 1–2, and the
+diversity/learnability ablations still to run.
 
 ## A2+ — RL / OPD arms
 

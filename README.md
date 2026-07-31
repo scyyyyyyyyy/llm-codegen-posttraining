@@ -113,7 +113,15 @@ MBPP+ 67.2/80.5/86.3/89.4% (k=1/4/16/64). A0 1.5B pass@k pending a batched rerun
    benchmarks. This — not syntax — is the headroom that RL and distillation must
    address (RQ2).
 
-*(Training arms A1+ are next; this section will grow.)*
+### 4.3 A1 SFT cold-start (seed 0)
+
+SFT (LoRA, teacher-distilled, 255 verified examples) raises pass@1(plus) to
+**72.6% HumanEval+ / 60.8% MBPP+** (from A0's 65.2 / 59.0), cutting logic errors
+(HE+ 25→18%) — H2 supported. But **EPR@init drops 58%→33%**: a stronger cold-start
+saturates easy prompts and sharpens the output distribution, *shrinking* the
+gradient-producing set for RL (H1 refuted — the more interesting result). The
+competence-vs-gradient-availability tension carries into A2–A4. Details in
+[docs/results.md](docs/results.md).
 
 ## 5. Repository layout
 
@@ -161,7 +169,8 @@ statistical rigor, and an explicit contamination audit — on a \$0–300 budget
 - [x] A0 student baseline (HumanEval+ / MBPP+)
 - [x] A0' teacher baseline + pass@k
 - [ ] pass@k for A0 (student)
-- [ ] A1 SFT (distilled from teacher) + error dynamics
+- [x] A1 SFT (distilled from teacher) — seed 0: pass@1 + EPR@init
+- [ ] A1: seeds 1–2, pass@k, diversity/learnability ablations
 - [ ] A2/A3/A3' GRPO arms + EPR curves (RQ1, RQ3)
 - [ ] A4 OPD + teacher–student win matrix (RQ4)
 - [ ] Statistical analysis + writeup
