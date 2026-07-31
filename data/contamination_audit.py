@@ -20,7 +20,9 @@ import re
 
 from .common import read_jsonl, write_jsonl
 
-NGRAM = 8
+# 13-gram is the GPT-3 decontamination default. Shorter n over-fires on MBPP's
+# templated phrasing ("Write a function to find the ...").
+NGRAM = 13
 
 
 def _eval_items() -> list[dict]:
@@ -73,18 +75,21 @@ def main() -> None:
     pool = read_jsonl(args.pool)
     eval_items = _eval_items()
 
+    # Remove on n-gram overlap only (standard decontamination). Entry-point name
+    # matches are reported as a diagnostic but NOT removed: MBPP reuses generic
+    # function names across different problems, so name match != contamination.
     sig = signature_collisions(pool, eval_items)
     ng = ngram_collisions(pool, eval_items, args.ngram)
-    removed = sig | ng
+    removed = ng
     clean = [r for r in pool if r["id"] not in removed]
 
     report = {
         "n_before": len(pool),
-        "removed_signature": len(sig),
-        "removed_ngram_only": len(ng - sig),
-        "removed_total": len(removed),
+        "removed_ngram": len(ng),
         "n_after": len(clean),
         "ngram_n": args.ngram,
+        "signature_name_matches_diagnostic": len(sig),
+        "signature_and_ngram": len(sig & ng),
     }
     os.makedirs(os.path.dirname(args.report) or ".", exist_ok=True)
     json.dump(report, open(args.report, "w"), indent=2)
