@@ -1,0 +1,1967 @@
+{
+  "n_prompts": 392,
+  "epr_init": 0.5841836734693877,
+  "mean_group_reward": 0.31919642857142855,
+  "per_prompt": [
+    {
+      "id": "mbpp/601",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/603",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/604",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/606",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/607",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/608",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/609",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/610",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/611",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/612",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/613",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/615",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/616",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/617",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/618",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/619",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/620",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/621",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/622",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/623",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/624",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/625",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/626",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/627",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/628",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/629",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/635",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/636",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/638",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/640",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/641",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/642",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/643",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/644",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/645",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/646",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/647",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/648",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/649",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/650",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/651",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/652",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/653",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/654",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/655",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/656",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/657",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/658",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/659",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/660",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/661",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/662",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/663",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/664",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/665",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/666",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/667",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/668",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/669",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/670",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/671",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/672",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/673",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/674",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/675",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/676",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/677",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/678",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/679",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/680",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/681",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/682",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/684",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/685",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/686",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/687",
+      "mean_reward": 1.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/688",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/689",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/690",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/691",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/692",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/693",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/694",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/695",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/696",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/697",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/698",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/699",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/700",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/701",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/702",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/703",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/704",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/705",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/706",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/707",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/708",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/709",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/710",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/711",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/712",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/713",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/714",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/715",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/716",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/717",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/718",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/720",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/721",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/722",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/723",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/726",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/727",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/728",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/729",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/730",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/731",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/734",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/738",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/742",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/745",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/746",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/747",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/750",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/752",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/753",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/754",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/755",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/758",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/759",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/760",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/761",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/764",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/765",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/766",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/768",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/769",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/774",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/776",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/779",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/783",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/785",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/789",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/791",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/795",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/798",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/799",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/800",
+      "mean_reward": 1.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/802",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/804",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/810",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/811",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/812",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/813",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/814",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/815",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/816",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/817",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/818",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/819",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/820",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/821",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/822",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/823",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/824",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/825",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/826",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/827",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/828",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/829",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/830",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/831",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/832",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/833",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/834",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/835",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/836",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/837",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/838",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/839",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/840",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/841",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/842",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/843",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/844",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/845",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/846",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/847",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/848",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/849",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/850",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/851",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/852",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/853",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/854",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/855",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/856",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/857",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/858",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/859",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/860",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/861",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/862",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/863",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/864",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/865",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/866",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/867",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/868",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/869",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/870",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/871",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/872",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/873",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/874",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/875",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/876",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/877",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/878",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/880",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/881",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/882",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/883",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/884",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/885",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/886",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/887",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/888",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/889",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/890",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/891",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/892",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/893",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/894",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/895",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/896",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/897",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/898",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/899",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/900",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/901",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/902",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/903",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/904",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/905",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/906",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/907",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/908",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/909",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/910",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/911",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/912",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/913",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/914",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/915",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/916",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/917",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/918",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/919",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/920",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/921",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/922",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/923",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/924",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/925",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/926",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/929",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/931",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/932",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/933",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/934",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/935",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/936",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/937",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/938",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/939",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/940",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/941",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/942",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/943",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/944",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/945",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/946",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/947",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/948",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/949",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/950",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/951",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/952",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/953",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/954",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/955",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/956",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/957",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/958",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/959",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/960",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/961",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/962",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/963",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/965",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/966",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/967",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/968",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/969",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/970",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/971",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "mbpp/972",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/973",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "mbpp/974",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/35",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/39",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/53",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/70",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "kodcode/77",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/89",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/93",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/114",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/119",
+      "mean_reward": 1.0,
+      "has_gradient": false
+    },
+    {
+      "id": "kodcode/131",
+      "mean_reward": 1.0,
+      "has_gradient": false
+    },
+    {
+      "id": "kodcode/135",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/153",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/158",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/165",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/166",
+      "mean_reward": 1.0,
+      "has_gradient": false
+    },
+    {
+      "id": "kodcode/170",
+      "mean_reward": 1.0,
+      "has_gradient": false
+    },
+    {
+      "id": "kodcode/180",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/191",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/215",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/218",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/236",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/245",
+      "mean_reward": 1.0,
+      "has_gradient": false
+    },
+    {
+      "id": "kodcode/247",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/253",
+      "mean_reward": 1.0,
+      "has_gradient": false
+    },
+    {
+      "id": "kodcode/260",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/273",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/276",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/280",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/307",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/320",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/357",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/361",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/368",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/371",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/382",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/414",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/424",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/428",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/429",
+      "mean_reward": 1.0,
+      "has_gradient": false
+    },
+    {
+      "id": "kodcode/443",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/444",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/446",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/449",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/452",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/466",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/491",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/495",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/505",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/515",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/521",
+      "mean_reward": 1.0,
+      "has_gradient": false
+    },
+    {
+      "id": "kodcode/535",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/544",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/552",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/568",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/572",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/573",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/578",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/598",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/600",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/606",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/612",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/624",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/631",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/646",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/652",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/670",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/674",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/681",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/689",
+      "mean_reward": 1.0,
+      "has_gradient": false
+    },
+    {
+      "id": "kodcode/713",
+      "mean_reward": 0.375,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/750",
+      "mean_reward": 0.75,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/765",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/774",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/786",
+      "mean_reward": 0.0,
+      "has_gradient": false
+    },
+    {
+      "id": "kodcode/797",
+      "mean_reward": 1.0,
+      "has_gradient": false
+    },
+    {
+      "id": "kodcode/811",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/822",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/849",
+      "mean_reward": 0.25,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/850",
+      "mean_reward": 0.125,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/861",
+      "mean_reward": 0.875,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/871",
+      "mean_reward": 0.5,
+      "has_gradient": true
+    },
+    {
+      "id": "kodcode/899",
+      "mean_reward": 0.625,
+      "has_gradient": true
+    }
+  ]
+}
