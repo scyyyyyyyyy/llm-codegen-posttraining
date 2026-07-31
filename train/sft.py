@@ -10,6 +10,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import os
 
 BASE_MODEL = "Qwen/Qwen2.5-Coder-1.5B-Instruct"
 # Qwen chat template starts each assistant turn with this marker; the
@@ -70,7 +71,8 @@ def main() -> None:
         save_steps=200,                    # best checkpoint is often mid-training
         save_total_limit=8,
         seed=args.seed,
-        report_to="wandb",
+        # Avoid hanging an unattended run on a wandb login prompt.
+        report_to="wandb" if os.getenv("WANDB_API_KEY") else "none",
         dataset_text_field="text",
     )
 
