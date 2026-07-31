@@ -43,8 +43,12 @@ def main() -> None:
         task_type="CAUSAL_LM",
     )
 
+    # Trainer writes adapters/checkpoints here; args.out holds ONLY the merged
+    # full model, so vLLM never sees stray adapter safetensors alongside it.
+    train_dir = args.out + "-train"
+
     cfg = SFTConfig(
-        output_dir=args.out,
+        output_dir=train_dir,
         num_train_epochs=args.epochs,
         per_device_train_batch_size=4,
         gradient_accumulation_steps=4,     # effective batch 16
@@ -79,7 +83,7 @@ def main() -> None:
     from peft import PeftModel
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    adapter_dir = args.out + "-adapter"
+    adapter_dir = train_dir + "/adapter"
     trainer.save_model(adapter_dir)
     del trainer
     gc.collect()
