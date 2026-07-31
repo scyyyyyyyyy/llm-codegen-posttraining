@@ -4,5 +4,4 @@ trl
 peft
 accelerate
 datasets
-sentence-transformers   # contamination audit (statement embeddings)
 wandb>=0.18          # <0.16 pulls pathtools, which needs the removed `imp` module on Py3.12
