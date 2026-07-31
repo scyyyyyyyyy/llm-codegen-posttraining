@@ -1,7 +1,7 @@
 """A1 SFT: LoRA fine-tune the 1.5B student on distilled, verified data (A1 §4).
 
-Completion-only loss (mask the prompt), LoRA, 3 seeds, per-200-step checkpoints.
-Shared init for all RL/OPD arms.
+Completion-only loss (assistant tokens only) via TRL's chat-aware SFTTrainer,
+LoRA, 3 seeds, per-200-step checkpoints. Shared init for all RL/OPD arms.
 
 Usage:
   python train/sft.py --data data/sft_base.jsonl --seed 0 --out checkpoints/sft-s0
@@ -13,9 +13,6 @@ import argparse
 import os
 
 BASE_MODEL = "Qwen/Qwen2.5-Coder-1.5B-Instruct"
-# Qwen chat template starts each assistant turn with this marker; the
-# completion-only collator masks everything up to and including it.
-RESPONSE_TEMPLATE = "<|im_start|>assistant\n"
 
 
 def main() -> None:
@@ -33,19 +30,11 @@ def main() -> None:
     import torch
     from datasets import load_dataset
     from peft import LoraConfig
-    from transformers import AutoTokenizer
-    from trl import DataCollatorForCompletionOnlyLM, SFTConfig, SFTTrainer
+    from trl import SFTConfig, SFTTrainer
 
-    tok = AutoTokenizer.from_pretrained(args.base_model)
-    if tok.pad_token is None:
-        tok.pad_token = tok.eos_token
-
+    # Conversational dataset: each row is {"messages": [...]}. SFTTrainer applies
+    # the chat template itself; assistant_only_loss masks the prompt tokens.
     ds = load_dataset("json", data_files=args.data, split="train")
-
-    def format_chat(ex):
-        return {"text": tok.apply_chat_template(ex["messages"], tokenize=False)}
-
-    ds = ds.map(format_chat, remove_columns=ds.column_names)
 
     lora = LoraConfig(
         r=args.lora_r, lora_alpha=2 * args.lora_r, lora_dropout=0.05,
@@ -53,8 +42,6 @@ def main() -> None:
                         "gate_proj", "up_proj", "down_proj"],
         task_type="CAUSAL_LM",
     )
-    collator = DataCollatorForCompletionOnlyLM(
-        response_template=RESPONSE_TEMPLATE, tokenizer=tok)
 
     cfg = SFTConfig(
         output_dir=args.out,
@@ -64,16 +51,15 @@ def main() -> None:
         learning_rate=args.lr,
         lr_scheduler_type="cosine",
         warmup_ratio=0.05,
-        max_seq_length=2048,
-        packing=False,                     # packing + completion-only don't mix
+        max_length=2048,
+        packing=False,
+        assistant_only_loss=True,          # completion-only loss (mask the prompt)
         bf16=torch.cuda.is_available(),
         logging_steps=20,
         save_steps=200,                    # best checkpoint is often mid-training
         save_total_limit=8,
         seed=args.seed,
-        # Avoid hanging an unattended run on a wandb login prompt.
         report_to="wandb" if os.getenv("WANDB_API_KEY") else "none",
-        dataset_text_field="text",
     )
 
     trainer = SFTTrainer(
@@ -81,7 +67,6 @@ def main() -> None:
         args=cfg,
         train_dataset=ds,
         peft_config=lora,
-        data_collator=collator,
     )
     trainer.train()
     trainer.save_model(args.out)
