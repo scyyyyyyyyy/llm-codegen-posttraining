@@ -19,10 +19,15 @@ TARGET_MIN, TARGET_MAX = 800, 1500
 
 
 def load_mbpp_train() -> list[dict]:
-    """MBPP train split -> pool schema. Tests are plain asserts calling the fn."""
+    """MBPP train split -> pool schema. Tests are plain asserts calling the fn.
+
+    Newer `datasets` requires a namespaced repo id (bare "mbpp" no longer resolves);
+    the "full" config's train split (374 problems) is disjoint from the test split
+    that MBPP+ derives from.
+    """
     from datasets import load_dataset
 
-    ds = load_dataset("mbpp", split="train")
+    ds = load_dataset("google-research-datasets/mbpp", "full", split="train")
     rows = []
     for ex in ds:
         code = ex["code"]
