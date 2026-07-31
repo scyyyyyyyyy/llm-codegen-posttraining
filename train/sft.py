@@ -70,17 +70,28 @@ def main() -> None:
     )
     trainer.train()
 
-    # Merge LoRA into the base weights and save a FULL model (+ tokenizer), so
-    # vLLM / the eval harness / later RL arms can load the checkpoint directly
-    # (a bare adapter dir has no config.json and vLLM refuses it).
-    from transformers import AutoTokenizer
+    # Save the LoRA adapter, then merge it into a FRESH base model. Merging the
+    # live trainer model leaves a 'base_model.' prefix on the weights that vLLM
+    # rejects; loading the adapter onto a clean base gives standard weight names.
+    # Result is a full model dir (+ tokenizer) that vLLM / eval / RL arms load.
+    import gc
 
-    merged = trainer.model.merge_and_unload()
+    from peft import PeftModel
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+
+    adapter_dir = args.out + "-adapter"
+    trainer.save_model(adapter_dir)
+    del trainer
+    gc.collect()
+    torch.cuda.empty_cache()
+
+    base = AutoModelForCausalLM.from_pretrained(args.base_model, torch_dtype=torch.bfloat16)
+    merged = PeftModel.from_pretrained(base, adapter_dir).merge_and_unload()
     merged.save_pretrained(args.out)
     AutoTokenizer.from_pretrained(args.base_model).save_pretrained(args.out)
     if args.push_to_hub:
         merged.push_to_hub(args.push_to_hub)
-    print(f"saved merged model -> {args.out}")
+    print(f"saved merged model -> {args.out}  (adapter at {adapter_dir})")
 
 
 if __name__ == "__main__":
