@@ -54,14 +54,16 @@ class RewardFn:
 
         codes = [extract_code(_completion_text(c)) for c in completions]
         rewards = []
-        for code, ts, ep in zip(codes, tests, entry_point):
+        for code, ts in zip(codes, tests):
             use = ts
             if self.subsample and len(ts) > self.subsample:
                 use = random.sample(ts, self.subsample)
+            # pool tests are plain asserts that call the fn directly -> entry_point
+            # must be None (no check() wrapper), matching build_sft_data / epr_init.
             if self.reward_type == "binary":
-                rewards.append(binary_reward(code, use, ep))
+                rewards.append(binary_reward(code, use))
             else:
-                rewards.append(partial_reward(code, use, ep))
+                rewards.append(partial_reward(code, use))
 
         # EPR: contiguous groups of G share a prompt in TRL GRPO ordering.
         groups = [rewards[i:i + self.g] for i in range(0, len(rewards), self.g)]
