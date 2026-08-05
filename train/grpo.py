@@ -124,7 +124,6 @@ def main() -> None:
         output_dir=args.out + "-train",
         num_generations=args.num_generations,
         temperature=1.0,
-        max_prompt_length=512,
         max_completion_length=512,
         learning_rate=args.lr,
         beta=args.beta,
@@ -133,6 +132,9 @@ def main() -> None:
         num_train_epochs=1,
         bf16=torch.cuda.is_available(),
         use_vllm=True,
+        vllm_mode="colocate",                    # share the training GPU
+        vllm_gpu_memory_utilization=0.3,         # leave room for training
+        vllm_max_model_length=2048,
         logging_steps=10,
         save_steps=100,
         seed=args.seed,
