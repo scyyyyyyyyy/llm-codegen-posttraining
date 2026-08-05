@@ -15,6 +15,10 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
+
+# Allow `python train/grpo.py` (script mode) to import the repo's packages.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from data.common import extract_code, read_jsonl
 from eval.epr import group_has_gradient
