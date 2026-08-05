@@ -111,7 +111,10 @@ def main() -> None:
     from trl import GRPOConfig, GRPOTrainer
 
     ds = build_dataset(args.pool)
-    tag = args.reward + ("-sub" if args.subsample else "")
+    # seed 0 keeps the original (already-committed) filename; seeds >0 get a
+    # suffix so multi-seed runs never clobber each other's EPR curves.
+    seed_sfx = "" if args.seed == 0 else f"_s{args.seed}"
+    tag = args.reward + ("-sub" if args.subsample else "") + seed_sfx
     reward = RewardFn(args.reward, args.num_generations,
                       f"results/epr_curve_{tag}.jsonl", args.subsample)
 
