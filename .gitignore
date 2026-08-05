@@ -30,3 +30,4 @@ results/*
 # R history
 .Rhistory
 .RData
+!results/epr_curve_*.jsonl
