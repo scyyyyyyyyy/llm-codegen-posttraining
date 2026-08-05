@@ -174,7 +174,9 @@ statistical rigor, and an explicit contamination audit — on a \$0–300 budget
 - [x] A0' teacher baseline + pass@k
 - [ ] pass@k for A0 (student)
 - [x] A1 SFT (distilled from teacher) — seed 0: pass@1 + EPR@init
-- [ ] A1: seeds 1–2, pass@k, diversity/learnability ablations
+- [x] A2/A3 GRPO binary vs partial — seed 0: **EPR 0.32 vs 0.46** (RQ1 supported)
+- [ ] A1/A2/A3: seeds 1–2, pass@k, eval of GRPO checkpoints, A3' Goodhart
+- [ ] A4 OPD + stats + blog
 - [ ] A2/A3/A3' GRPO arms + EPR curves (RQ1, RQ3)
 - [ ] A4 OPD + teacher–student win matrix (RQ4)
 - [ ] Statistical analysis + writeup

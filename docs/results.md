@@ -120,6 +120,30 @@ gradient-availability/diversity) is the through-line into A2/A3 (RL) and A4 (OPD
 Caveats: single seed; pass@k (to confirm diversity collapse), seeds 1–2, and the
 diversity/learnability ablations still to run.
 
-## A2+ — RL / OPD arms
+## A2 / A3 — GRPO binary vs partial credit (seed 0, RQ1 headline)
+
+Both arms: GRPO from the A1 SFT checkpoint, 1 epoch over the 392-prompt pool,
+G=8, temp 1.0, LoRA. The reward function logs EPR every step
+(`results/epr_curve_{binary,partial}.jsonl`).
+
+Averaged over the 98 training steps:
+
+| | mean EPR | mean reward |
+|---|:---:|:---:|
+| A2 GRPO-binary | 0.319 | 0.589 |
+| A3 GRPO-partial | **0.459** | 0.686 |
+
+**RQ1 finding (supported).** Partial-credit reward raises EPR from ~32% to ~46%
+(+44% relative) across training — densifying the reward moves substantially more
+prompts into the gradient-producing (some-pass-some-fail) zone, exactly the
+reward-density thesis. Binary reward wastes both ends (all-fail hard prompts,
+all-pass easy prompts); partial credit rescues the middle. (Mean reward is not
+directly comparable across arms — partial is continuous [0,1] with compile/runtime
+bonuses, so it is higher by construction; EPR is the clean comparison.)
+
+Next: eval A2/A3 checkpoints (pass@1 / difficulty) to see whether the higher EPR
+translates into final accuracy; A3' (test subsampling, Goodhart); seeds.
+
+## A4 — OPD
 
 _Pending._
