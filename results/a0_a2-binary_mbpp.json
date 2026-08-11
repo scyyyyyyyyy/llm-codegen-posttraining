@@ -1,0 +1,54 @@
+{
+  "arm": "A0",
+  "dataset": "mbpp",
+  "tag": "a2-binary",
+  "n_tasks": 378,
+  "pass@1_base": 0.7248677248677249,
+  "pass@1_plus": 0.6058201058201058,
+  "pass@1_plus_by_difficulty": {
+    "easy": 0.7301587301587301,
+    "medium": 0.6212121212121212,
+    "hard": 0.4065040650406504
+  },
+  "error_breakdown": {
+    "correct": 71.95767195767196,
+    "syntax_error": 0.0,
+    "runtime_error": 6.084656084656085,
+    "logic_error": 21.95767195767196,
+    "timeout": 0.0
+  },
+  "error_breakdown_by_difficulty": {
+    "easy": {
+      "correct": 83.5978835978836,
+      "syntax_error": 0.0,
+      "runtime_error": 3.1746031746031744,
+      "logic_error": 13.227513227513228,
+      "timeout": 0.0
+    },
+    "medium": {
+      "correct": 75.75757575757575,
+      "syntax_error": 0.0,
+      "runtime_error": 10.606060606060606,
+      "logic_error": 13.636363636363637,
+      "timeout": 0.0
+    },
+    "hard": {
+      "correct": 52.03252032520325,
+      "syntax_error": 0.0,
+      "runtime_error": 8.130081300813009,
+      "logic_error": 39.83739837398374,
+      "timeout": 0.0
+    }
+  },
+  "difficulty_counts": {
+    "easy": 189,
+    "medium": 66,
+    "hard": 123
+  },
+  "pass@k_plus": {
+    "1": 0.5935019841269841,
+    "4": 0.696831174348424,
+    "16": 0.7629603954366692,
+    "64": 0.8095238095238095
+  }
+}
