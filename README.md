@@ -102,8 +102,11 @@ post-training targets and the OPD reference.
 | A0' 7B | HumanEval+ | 90.2% | 0.0% | 2.4% | 7.3% | 0.0% |
 | A0' 7B | MBPP+      | 82.3% | 0.0% | 2.9% | 14.8% | 0.0% |
 
-**pass@k (plus, temp 0.8, n=64).** A0' 7B: HumanEval+ 82.3/91.0/93.7/94.5%,
-MBPP+ 67.2/80.5/86.3/89.4% (k=1/4/16/64). A0 1.5B pass@k pending a batched rerun.
+**pass@k (plus, temp 0.8, n=64; k=1/4/16/64).** A0 1.5B: HumanEval+
+61.8/80.4/88.8/**92.1**%, MBPP+ 56.0/71.4/79.3/**84.7**%. A0' 7B: HumanEval+
+82.3/91.0/93.7/94.5%, MBPP+ 67.2/80.5/86.3/89.4%. The full A0→A1→A2→A3 pass@k table
+is in [docs/results.md](docs/results.md): post-training lifts pass@1 but leaves
+pass@64 flat — it **sharpens rather than extends** (RQ4).
 
 ### 4.2 Findings so far
 
@@ -126,6 +129,26 @@ saturates easy prompts and sharpens the output distribution, *shrinking* the
 gradient-producing set for RL (H1 refuted — the more interesting result). The
 competence-vs-gradient-availability tension carries into A2–A4. Details in
 [docs/results.md](docs/results.md).
+
+### 4.4 A2 / A3 GRPO — reward density: mechanism yes, accuracy no
+
+The RQ1 test, in two parts:
+
+- **Training dynamics (EPR), replicated over 2 seeds.** Partial-credit reward raises
+  mean EPR from **0.32 (binary) to 0.46–0.49 (partial)** — densifying the reward
+  moves substantially more prompt-groups into the gradient-producing zone. The
+  mechanism is real and reproducible.
+- **Held-out accuracy — null.** One epoch of LoRA GRPO with *either* reward does
+  **not** move held-out pass@1 off the SFT start (A1 72.6 / A2 71.3 / A3 72.6 on
+  HumanEval+; ~60% on MBPP+, all deltas ≤1.5%). Higher EPR did not convert to higher
+  accuracy in this light-touch regime; the arms are statistically indistinguishable
+  (conservative MDE ~15% / ~10% on n=164 / 378).
+
+The honest headline is a **two-sided result**: reward density measurably changes the
+*learnable signal* (EPR) but not the *endpoint* here — the story lives in the
+mechanism, not a pass@1 win. pass@k (§4.1) adds the RQ4 half: post-training sharpens
+rather than extends. This matches the pre-registered risk plan and frames why the
+dense limit (A4 OPD) — the only arm expected to raise the pass@k ceiling — matters.
 
 ## 5. Repository layout
 
@@ -173,13 +196,15 @@ statistical rigor, and an explicit contamination audit — on a \$0–300 budget
 - [x] A0 student baseline (HumanEval+ / MBPP+)
 - [x] A0' teacher baseline + pass@k
 - [ ] pass@k for A0 (student)
+- [x] pass@k for A0 (student) — HumanEval+ 92.1% / MBPP+ 84.7% @k=64
 - [x] A1 SFT (distilled from teacher) — seed 0: pass@1 + EPR@init
-- [x] A2/A3 GRPO binary vs partial — seed 0: **EPR 0.32 vs 0.46** (RQ1 supported)
-- [ ] A1/A2/A3: seeds 1–2, pass@k, eval of GRPO checkpoints, A3' Goodhart
-- [ ] A4 OPD + stats + blog
-- [ ] A2/A3/A3' GRPO arms + EPR curves (RQ1, RQ3)
-- [ ] A4 OPD + teacher–student win matrix (RQ4)
-- [ ] Statistical analysis + writeup
+- [x] A2/A3 GRPO binary vs partial — **EPR 0.32 vs 0.46–0.49 over 2 seeds** (RQ1 mechanism)
+- [x] A2/A3 held-out eval + full pass@k (A0→A1→A2→A3) — **RQ1: higher EPR did *not*
+  lift held-out pass@1; RQ4: post-training sharpens, not extends (pass@64 flat)**
+- [ ] A1/A2/A3: seed 2; exact paired-bootstrap CIs (`analysis.compare`)
+- [ ] A3' visible-test subsampling (RQ3 Goodhart)
+- [ ] A4 OPD + teacher–student win matrix (RQ4) — the dense limit
+- [ ] Statistical analysis writeup + blog
 
 ## References
 
