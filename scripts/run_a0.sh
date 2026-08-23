@@ -17,6 +17,7 @@ set -euo pipefail
 
 MODEL="${MODEL:-Qwen/Qwen2.5-Coder-1.5B-Instruct}"
 TAG="${TAG:-qwen1.5b}"            # use qwen7b for A0'
+ARM="${ARM:-A0}"                  # experiment arm stored in result summaries
 ROOT="${ROOT:-evalplus_results}"
 NSAMPLES="${NSAMPLES:-64}"
 TEMP="${TEMP:-0.8}"
@@ -24,6 +25,7 @@ TP="${TP:-1}"                    # tensor-parallel; 1 GPU
 DO_PASSK="${DO_PASSK:-1}"        # set 0 to skip pass@k (faster / cheaper)
 DATASETS="${DATASETS:-humaneval mbpp}"   # override e.g. DATASETS=mbpp
 PARALLEL="${PARALLEL:-8}"        # evalplus eval workers; too high OOMs the pool on pass@k
+OUT_DIR="${OUT_DIR:-results}"     # summaries; raw evalplus files stay under ROOT
 
 export HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
 # hf-mirror does not proxy HF's Xet/CAS server (xethub.hf.co) -> 401 on newer
@@ -36,6 +38,9 @@ newest_results() { ls -t "$1"/*eval_results.json 2>/dev/null | head -1; }
 
 gen_eval() {   # $1=dataset  $2=mode(greedy|passk)  $3=root
   local dataset="$1" mode="$2" root="$3"
+  # Every attempt gets an isolated directory. A failed retry can therefore
+  # never silently reuse a stale samples file from an earlier attempt.
+  local attempt_root="${root}/attempt-$(date -u +%Y%m%dT%H%M%SZ)-$$"
   # IMPORTANT: everything except the final path must go to stderr, otherwise the
   # caller's $(gen_eval ...) captures all the vLLM/codegen logs as the "path".
   {
@@ -43,15 +48,15 @@ gen_eval() {   # $1=dataset  $2=mode(greedy|passk)  $3=root
     # on CUDA 12 images) AFTER the samples file is written; don't let that abort us.
     set +e
     if [ "$mode" = "greedy" ]; then
-      python -m evalplus.codegen "$MODEL" "$dataset" --greedy --backend vllm --tp "$TP" --root "$root"
+      python -m evalplus.codegen "$MODEL" "$dataset" --greedy --backend vllm --tp "$TP" --root "$attempt_root"
     else
       python -m evalplus.codegen "$MODEL" "$dataset" --n_samples "$NSAMPLES" \
-          --temperature "$TEMP" --backend vllm --tp "$TP" --root "$root"
+          --temperature "$TEMP" --backend vllm --tp "$TP" --root "$attempt_root"
     fi
     set -e
-    local raw; raw="$(newest_samples "${root}/${dataset}")"
+    local raw; raw="$(newest_samples "${attempt_root}/${dataset}")"
     if [ -z "$raw" ]; then
-      echo "ERROR: codegen produced no samples in ${root}/${dataset}" >&2
+      echo "ERROR: codegen produced no samples in ${attempt_root}/${dataset}" >&2
       return 1
     fi
     python -m evalplus.sanitize --samples "$raw" >/dev/null
@@ -59,7 +64,7 @@ gen_eval() {   # $1=dataset  $2=mode(greedy|passk)  $3=root
     [ -f "$SAN" ] || SAN="$raw"       # fall back if sanitize named it differently
     python -m evalplus.evaluate --dataset "$dataset" --samples "$SAN" --parallel "$PARALLEL"
   } 1>&2
-  newest_results "${root}/${dataset}"   # the ONLY thing on stdout
+  newest_results "${attempt_root}/${dataset}"   # the ONLY thing on stdout
 }
 
 for DATASET in $DATASETS; do
@@ -77,7 +82,8 @@ for DATASET in $DATASETS; do
   fi
 
   python -m eval.run_a0 --dataset "$DATASET" --tag "$TAG" \
-      --greedy-results "${GREEDY_RESULTS}" "${PASSK_ARG[@]}"
+      --arm "$ARM" --greedy-results "${GREEDY_RESULTS}" \
+      "${PASSK_ARG[@]}" --out-dir "$OUT_DIR"
 done
 
 echo "Done. Summaries in results/a0_${TAG}_*.json"

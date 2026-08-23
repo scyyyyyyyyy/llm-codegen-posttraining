@@ -66,8 +66,14 @@ def main() -> None:
     p.add_argument("--labels", nargs=2, default=["A", "B"])
     p.add_argument("--dataset", choices=["humaneval", "mbpp"], required=True)
     p.add_argument("--base-only", action="store_true", help="use base tests, not plus")
+    p.add_argument("--out", default=None, help="optional JSON output path")
     args = p.parse_args()
     res = compare(args.a, args.b, args.dataset, tuple(args.labels), not args.base_only)
+    if args.out:
+        import os
+        os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
+        with open(args.out, "w") as f:
+            json.dump(res, f, indent=2)
     print(json.dumps(res, indent=2))
 
 

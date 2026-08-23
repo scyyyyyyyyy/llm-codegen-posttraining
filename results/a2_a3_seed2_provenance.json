@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "scope": "A2/A3 seed-2 replication",
+  "repository_base_commit": "f258e326faae9da18e0fe4f2d0ceaa2939e444ee",
+  "code_note": "The run used the working-tree reliability changes represented by this PR on top of the base commit.",
+  "shared_init": {
+    "checkpoint_tag": "a1-s2",
+    "sft_input_rows": 254,
+    "sft_input_sha256": "dd218cb418aaa90b3df03f0d2d38b46cd87a05a005fdccb572a2d34ef04321d3"
+  },
+  "training_pool": {
+    "path": "data/prompt_pool.clean.jsonl",
+    "rows": 392,
+    "sha256": "03cad62c6988d674ae05f301a0fa8d6bdf1affd966e75ccf0bdc46f17ad91287"
+  },
+  "common_grpo": {
+    "seed": 2,
+    "num_generations": 8,
+    "updates": 98,
+    "per_device_train_batch_size": 4,
+    "gradient_accumulation_steps": 8,
+    "effective_batch_size": 32,
+    "gradient_checkpointing": true,
+    "vllm_gpu_memory_utilization": 0.25,
+    "temperature": 1.0,
+    "max_completion_length": 512,
+    "learning_rate": 0.000002,
+    "beta": 0.0
+  },
+  "arms": {
+    "A2": {
+      "tag": "a2-binary-s2",
+      "reward": "binary"
+    },
+    "A3": {
+      "tag": "a3-partial-s2",
+      "reward": "partial"
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "torch": "2.11.0",
+    "transformers": "5.15.0",
+    "trl": "1.9.2",
+    "peft": "0.20.0",
+    "vllm": "0.25.1",
+    "evalplus": "0.3.1"
+  }
+}

@@ -134,15 +134,16 @@ competence-vs-gradient-availability tension carries into A2–A4. Details in
 
 The RQ1 test, in two parts:
 
-- **Training dynamics (EPR), replicated over 2 seeds.** Partial-credit reward raises
-  mean EPR from **0.32 (binary) to 0.46–0.49 (partial)** — densifying the reward
+- **Training dynamics (EPR), replicated over 3 seeds.** Partial-credit reward raises
+  mean EPR from **0.325 (binary) to 0.480 (partial)** — densifying the reward
   moves substantially more prompt-groups into the gradient-producing zone. The
   mechanism is real and reproducible.
 - **Held-out accuracy — null.** One epoch of LoRA GRPO with *either* reward does
   **not** move held-out pass@1 off the SFT start (A1 72.6 / A2 71.3 / A3 72.6 on
   HumanEval+; ~60% on MBPP+, all deltas ≤1.5%). Higher EPR did not convert to higher
-  accuracy in this light-touch regime; the arms are statistically indistinguishable
-  (conservative MDE ~15% / ~10% on n=164 / 378).
+  accuracy in this light-touch regime. Seed 2 repeats the same pattern: A2/A3 are
+  73.8/71.3% on HumanEval+ and 59.5/60.1% on MBPP+. There is no consistent
+  cross-benchmark endpoint advantage (conservative MDE ~15% / ~10%).
 
 The honest headline is a **two-sided result**: reward density measurably changes the
 *learnable signal* (EPR) but not the *endpoint* here — the story lives in the
@@ -179,6 +180,24 @@ python -m eval.verify_pipeline --n 164
 MODEL=Qwen/Qwen2.5-Coder-1.5B-Instruct TAG=qwen1.5b bash scripts/run_a0.sh
 MODEL=Qwen/Qwen2.5-Coder-7B-Instruct   TAG=qwen7b   bash scripts/run_a0.sh
 # -> results/a0_<tag>_<dataset>.json  (pass@1, pass@k, error breakdown, difficulty)
+
+# A2/A3 seed-2 replication from the shared A1 seed-2 checkpoint
+python train/grpo.py --reward binary --init checkpoints/a1-s2 \
+  --pool data/prompt_pool.clean.jsonl --out checkpoints/a2-binary-s2 --seed 2 \
+  --per-device-train-batch-size 4 --gradient-accumulation-steps 8 \
+  --expected-effective-batch-size 32 --gradient-checkpointing \
+  --vllm-gpu-memory-utilization 0.25 --save-steps 20 \
+  --epr-log results/epr_curve_a2-binary-s2.jsonl
+
+python train/grpo.py --reward partial --init checkpoints/a1-s2 \
+  --pool data/prompt_pool.clean.jsonl --out checkpoints/a3-partial-s2 --seed 2 \
+  --per-device-train-batch-size 4 --gradient-accumulation-steps 8 \
+  --expected-effective-batch-size 32 --gradient-checkpointing \
+  --vllm-gpu-memory-utilization 0.25 --save-steps 20 \
+  --epr-log results/epr_curve_a3-partial-s2.jsonl
+
+ARM=A2 MODEL=checkpoints/a2-binary-s2 TAG=a2-binary-s2 bash scripts/run_a0.sh
+ARM=A3 MODEL=checkpoints/a3-partial-s2 TAG=a3-partial-s2 bash scripts/run_a0.sh
 ```
 
 ## 7. Scope and limitations
@@ -198,10 +217,10 @@ statistical rigor, and an explicit contamination audit — on a \$0–300 budget
 - [ ] pass@k for A0 (student)
 - [x] pass@k for A0 (student) — HumanEval+ 92.1% / MBPP+ 84.7% @k=64
 - [x] A1 SFT (distilled from teacher) — seed 0: pass@1 + EPR@init
-- [x] A2/A3 GRPO binary vs partial — **EPR 0.32 vs 0.46–0.49 over 2 seeds** (RQ1 mechanism)
+- [x] A2/A3 GRPO binary vs partial — **EPR 0.325 vs 0.480 over 3 seeds** (RQ1 mechanism)
 - [x] A2/A3 held-out eval + full pass@k (A0→A1→A2→A3) — **RQ1: higher EPR did *not*
   lift held-out pass@1; RQ4: post-training sharpens, not extends (pass@64 flat)**
-- [ ] A1/A2/A3: seed 2; exact paired-bootstrap CIs (`analysis.compare`)
+- [x] A2/A3 seed 2 + exact paired-bootstrap/McNemar comparison
 - [ ] A3' visible-test subsampling (RQ3 Goodhart)
 - [ ] A4 OPD + teacher–student win matrix (RQ4) — the dense limit
 - [ ] Statistical analysis writeup + blog

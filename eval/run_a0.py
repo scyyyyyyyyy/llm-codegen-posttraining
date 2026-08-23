@@ -38,7 +38,8 @@ def _load_tasks(dataset: str) -> dict:
 
 
 def collect(dataset: str, tag: str, greedy_results: str, greedy_samples: str | None,
-            passk_results: str | None, out_dir: str = "results") -> dict:
+            passk_results: str | None, out_dir: str = "results",
+            arm: str = "A0") -> dict:
     tasks = _load_tasks(dataset)
     difficulty = assign_difficulty(tasks)
     # Prefer an explicit samples file; otherwise read solutions from the results.
@@ -49,7 +50,7 @@ def collect(dataset: str, tag: str, greedy_results: str, greedy_samples: str | N
     correct_base = parse_eval_results(greedy_results, use_plus=False)
 
     summary = {
-        "arm": "A0",
+        "arm": arm,
         "dataset": dataset,
         "tag": tag,
         "n_tasks": len(tasks),
@@ -70,14 +71,18 @@ def collect(dataset: str, tag: str, greedy_results: str, greedy_samples: str | N
 
     os.makedirs(out_dir, exist_ok=True)
     out_path = os.path.join(out_dir, f"a0_{tag}_{dataset}.json")
-    json.dump(summary, open(out_path, "w"), indent=2)
+    with open(out_path, "w") as f:
+        json.dump(summary, f, indent=2)
     _print_table(summary)
     print(f"\nwrote {out_path}")
     return summary
 
 
 def _print_table(s: dict) -> None:
-    print(f"\n=== A0 baseline: {s['tag']} on {s['dataset']} ({s['n_tasks']} tasks) ===")
+    print(
+        f"\n=== {s['arm']}: {s['tag']} on {s['dataset']} "
+        f"({s['n_tasks']} tasks) ==="
+    )
     print(f"pass@1 (base): {100*s['pass@1_base']:.1f}%   pass@1 (plus): {100*s['pass@1_plus']:.1f}%")
     print("pass@1 (plus) by difficulty:", {k: f"{100*v:.1f}%" for k, v in s["pass@1_plus_by_difficulty"].items()})
     print("error breakdown:", {k: f"{v:.1f}%" for k, v in s["error_breakdown"].items()})
@@ -88,6 +93,7 @@ def _print_table(s: dict) -> None:
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--dataset", choices=["humaneval", "mbpp"], required=True)
+    p.add_argument("--arm", default="A0", help="experiment arm stored in the summary")
     p.add_argument("--tag", required=True, help="e.g. qwen1.5b (A0) or qwen7b (A0')")
     p.add_argument("--greedy-results", required=True)
     p.add_argument("--greedy-samples", default=None,
@@ -95,8 +101,15 @@ def main() -> None:
     p.add_argument("--passk-results", default=None)
     p.add_argument("--out-dir", default="results")
     args = p.parse_args()
-    collect(args.dataset, args.tag, args.greedy_results, args.greedy_samples,
-            args.passk_results, args.out_dir)
+    collect(
+        args.dataset,
+        args.tag,
+        args.greedy_results,
+        args.greedy_samples,
+        args.passk_results,
+        args.out_dir,
+        arm=args.arm,
+    )
 
 
 if __name__ == "__main__":
