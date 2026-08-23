@@ -14,8 +14,6 @@ from __future__ import annotations
 
 import json
 
-from evalplus.eval import estimate_pass_at_k
-
 from .difficulty import LAYERS, assign_difficulty
 from .error_classify import LABELS, breakdown, classify
 
@@ -29,7 +27,8 @@ def parse_eval_results(path: str, use_plus: bool = True) -> dict[str, list[bool]
 
     With use_plus, an attempt is correct iff it passes BOTH base and plus tests.
     """
-    d = json.load(open(path))
+    with open(path) as f:
+        d = json.load(f)
     out: dict[str, list[bool]] = {}
     for tid, attempts in d["eval"].items():
         flags = []
@@ -50,6 +49,8 @@ def pass_at_1(correct_by_task: dict[str, list[bool]]) -> float:
 
 def pass_at_k(correct_by_task: dict[str, list[bool]], ks=PASS_AT_K_VALUES) -> dict[int, float]:
     """Unbiased pass@k across tasks (reuses evalplus.estimate_pass_at_k)."""
+    from evalplus.eval import estimate_pass_at_k
+
     totals = [len(f) for f in correct_by_task.values()]
     corrects = [sum(f) for f in correct_by_task.values()]
     result = {}
@@ -81,7 +82,8 @@ def samples_from_results(path: str) -> dict[str, list[str]]:
     Each attempt already carries its `solution`, so the breakdown needs no
     separate samples file.
     """
-    d = json.load(open(path))
+    with open(path) as f:
+        d = json.load(f)
     return {
         tid: [a.get("solution", "") for a in attempts]
         for tid, attempts in d["eval"].items()

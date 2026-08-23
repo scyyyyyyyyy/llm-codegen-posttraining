@@ -40,19 +40,35 @@ class RewardFn:
     """Callable reward for GRPOTrainer that also logs EPR per generation group."""
 
     def __init__(self, reward_type: str, num_generations: int, log_path: str,
-                 subsample: int | None = None):
+                 subsample: int | None = None, resume_step: int | None = None):
         self.reward_type = reward_type
         self.g = num_generations
         self.log_path = log_path
         self.subsample = subsample
         self.step = 0
         os.makedirs(os.path.dirname(log_path) or ".", exist_ok=True)
-        open(log_path, "w").close()
+        if resume_step is not None:
+            if not os.path.exists(log_path):
+                raise FileNotFoundError(
+                    f"cannot resume at step {resume_step}: missing EPR log {log_path}")
+            with open(log_path) as f:
+                lines = [line for line in f if line.strip()]
+            if len(lines) < resume_step:
+                raise ValueError(
+                    f"cannot resume at step {resume_step}: EPR log has only {len(lines)} records")
+            with open(log_path, "w") as f:
+                f.writelines(lines[:resume_step])
+            self.step = resume_step
+        else:
+            with open(log_path, "w"):
+                pass
 
     def __call__(self, prompts, completions, tests=None, entry_point=None, **kw):
         import random
 
         codes = [extract_code(_completion_text(c)) for c in completions]
+        if tests is None or len(tests) != len(codes):
+            raise ValueError("TRL must provide one test list per completion")
         rewards = []
         for code, ts in zip(codes, tests):
             use = ts
@@ -93,6 +109,37 @@ def build_dataset(pool_path: str):
     ])
 
 
+def validate_generation_batch(
+    per_device_train_batch_size: int,
+    gradient_accumulation_steps: int,
+    num_generations: int,
+    expected_effective_batch_size: int,
+) -> int:
+    """Guard against silently changing the rollout/update budget."""
+    values = {
+        "per_device_train_batch_size": per_device_train_batch_size,
+        "gradient_accumulation_steps": gradient_accumulation_steps,
+        "num_generations": num_generations,
+        "expected_effective_batch_size": expected_effective_batch_size,
+    }
+    if any(value <= 0 for value in values.values()):
+        raise ValueError(f"GRPO batch parameters must be positive: {values}")
+    effective = per_device_train_batch_size * gradient_accumulation_steps
+    if effective != expected_effective_batch_size:
+        raise ValueError(
+            "GRPO rollout budget changed: "
+            f"microbatch({per_device_train_batch_size}) * "
+            f"accumulation({gradient_accumulation_steps}) = {effective}, "
+            f"expected {expected_effective_batch_size}"
+        )
+    if effective % num_generations:
+        raise ValueError(
+            f"effective batch {effective} is not divisible by "
+            f"num_generations {num_generations}"
+        )
+    return effective
+
+
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--reward", choices=["binary", "partial"], required=True)
@@ -101,22 +148,69 @@ def main() -> None:
     p.add_argument("--out", default="checkpoints/grpo")
     p.add_argument("--subsample", type=int, default=None, help="A3': visible-test subset size")
     p.add_argument("--num-generations", type=int, default=8)
+    p.add_argument("--max-prompts", type=int, default=None,
+                   help="limit the pool for a smoke test; unset for a full run")
+    p.add_argument("--max-steps", type=int, default=-1,
+                   help="override epoch length; use 1 for a smoke test")
+    p.add_argument("--per-device-train-batch-size", type=int, default=8)
+    p.add_argument("--gradient-accumulation-steps", type=int, default=4)
+    p.add_argument("--expected-effective-batch-size", type=int, default=32,
+                   help="guardrail for an unchanged rollout/update budget")
+    p.add_argument("--max-completion-length", type=int, default=512)
+    p.add_argument("--vllm-gpu-memory-utilization", type=float, default=0.3)
+    p.add_argument(
+        "--gradient-checkpointing",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="trade compute for activation memory without changing rollout budget",
+    )
+    p.add_argument("--save-steps", type=int, default=100)
+    p.add_argument("--epr-log", default=None)
+    p.add_argument("--resume-from-checkpoint", default=None)
+    p.add_argument("--skip-merge", action="store_true",
+                   help="save only the adapter (useful for a smoke test)")
     p.add_argument("--lr", type=float, default=2e-6)
     p.add_argument("--beta", type=float, default=0.0, help="KL coeff; raise if output degrades")
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
+
+    effective_batch_size = validate_generation_batch(
+        args.per_device_train_batch_size,
+        args.gradient_accumulation_steps,
+        args.num_generations,
+        args.expected_effective_batch_size,
+    )
+    if not 0.0 < args.vllm_gpu_memory_utilization < 1.0:
+        p.error("--vllm-gpu-memory-utilization must be strictly between 0 and 1")
+    print(json.dumps({
+        "grpo_runtime": {
+            "per_device_train_batch_size": args.per_device_train_batch_size,
+            "gradient_accumulation_steps": args.gradient_accumulation_steps,
+            "effective_batch_size": effective_batch_size,
+            "num_generations": args.num_generations,
+            "prompt_groups_per_update": effective_batch_size // args.num_generations,
+        }
+    }, sort_keys=True))
 
     import torch
     from peft import LoraConfig
     from trl import GRPOConfig, GRPOTrainer
 
     ds = build_dataset(args.pool)
+    if args.max_prompts is not None:
+        ds = ds.select(range(min(args.max_prompts, len(ds))))
     # seed 0 keeps the original (already-committed) filename; seeds >0 get a
     # suffix so multi-seed runs never clobber each other's EPR curves.
     seed_sfx = "" if args.seed == 0 else f"_s{args.seed}"
     tag = args.reward + ("-sub" if args.subsample else "") + seed_sfx
+    epr_log = args.epr_log or f"results/epr_curve_{tag}.jsonl"
+    resume_step = None
+    if args.resume_from_checkpoint:
+        state_path = os.path.join(args.resume_from_checkpoint, "trainer_state.json")
+        with open(state_path) as f:
+            resume_step = int(json.load(f)["global_step"])
     reward = RewardFn(args.reward, args.num_generations,
-                      f"results/epr_curve_{tag}.jsonl", args.subsample)
+                      epr_log, args.subsample, resume_step=resume_step)
 
     lora = LoraConfig(
         r=32, lora_alpha=64, lora_dropout=0.05,
@@ -129,19 +223,25 @@ def main() -> None:
         output_dir=args.out + "-train",
         num_generations=args.num_generations,
         temperature=1.0,
-        max_completion_length=512,
+        max_completion_length=args.max_completion_length,
         learning_rate=args.lr,
         beta=args.beta,
-        per_device_train_batch_size=args.num_generations,  # >=1 prompt * G
-        gradient_accumulation_steps=4,
+        per_device_train_batch_size=args.per_device_train_batch_size,
+        gradient_accumulation_steps=args.gradient_accumulation_steps,
         num_train_epochs=1,
+        max_steps=args.max_steps,
         bf16=torch.cuda.is_available(),
+        gradient_checkpointing=args.gradient_checkpointing,
+        gradient_checkpointing_kwargs=(
+            {"use_reentrant": False} if args.gradient_checkpointing else None
+        ),
         use_vllm=True,
         vllm_mode="colocate",                    # share the training GPU
-        vllm_gpu_memory_utilization=0.3,         # leave room for training
+        vllm_gpu_memory_utilization=args.vllm_gpu_memory_utilization,
         vllm_max_model_length=2048,
         logging_steps=10,
-        save_steps=100,
+        save_steps=args.save_steps,
+        save_total_limit=3,
         seed=args.seed,
         report_to="wandb" if os.getenv("WANDB_API_KEY") else "none",
     )
@@ -153,7 +253,7 @@ def main() -> None:
         train_dataset=ds,
         peft_config=lora,
     )
-    trainer.train()
+    trainer.train(resume_from_checkpoint=args.resume_from_checkpoint)
 
     # merge onto a fresh base -> full model for eval / next arm
     import gc
@@ -163,6 +263,9 @@ def main() -> None:
 
     adapter_dir = args.out + "-train/adapter"
     trainer.save_model(adapter_dir)
+    if args.skip_merge:
+        print(f"training adapter saved -> {adapter_dir}; merge skipped")
+        return
     del trainer
     gc.collect()
     torch.cuda.empty_cache()
@@ -170,7 +273,7 @@ def main() -> None:
     merged = PeftModel.from_pretrained(base, adapter_dir).merge_and_unload()
     merged.save_pretrained(args.out)
     AutoTokenizer.from_pretrained(args.init).save_pretrained(args.out)
-    print(f"saved merged model -> {args.out}  (EPR curve: results/epr_curve_{tag}.jsonl)")
+    print(f"saved merged model -> {args.out}  (EPR curve: {epr_log})")
 
 
 if __name__ == "__main__":

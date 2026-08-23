@@ -126,19 +126,20 @@ diversity/learnability ablations still to run.
 
 Both arms: GRPO from the A1 SFT checkpoint, 1 epoch over the 392-prompt pool,
 G=8, temp 1.0, LoRA. The reward function logs EPR every step
-(`results/epr_curve_{binary,partial}[_s1].jsonl`).
+(`results/epr_curve_{binary,partial}[_s1].jsonl` for seeds 0–1 and
+`results/epr_curve_{a2-binary-s2,a3-partial-s2}.jsonl` for seed 2).
 
-### RQ1a — training dynamics (EPR), replicated over 2 seeds
+### RQ1a — training dynamics (EPR), replicated over 3 seeds
 
 Mean EPR over the 98 training steps:
 
-| | seed 0 | seed 1 |
-|---|:---:|:---:|
-| A2 GRPO-binary  | 0.319 | 0.319 |
-| A3 GRPO-partial | **0.459** | **0.492** |
+| | seed 0 | seed 1 | seed 2 | mean ± SD |
+|---|:---:|:---:|:---:|:---:|
+| A2 GRPO-binary  | 0.319 | 0.319 | 0.337 | 0.325 ± 0.010 |
+| A3 GRPO-partial | **0.459** | **0.492** | **0.487** | **0.480 ± 0.018** |
 
-**Finding (supported, n=2).** Partial-credit reward raises EPR from ~32% to
-~46–49% across training, on both seeds — densifying the reward moves substantially
+**Finding (supported, n=3).** Partial-credit reward raises EPR from ~32% to
+~46–49% across training, on all three seeds — densifying the reward moves substantially
 more prompts into the gradient-producing (some-pass-some-fail) zone, exactly the
 reward-density thesis. Binary reward wastes both ends (all-fail hard prompts,
 all-pass easy prompts); partial credit rescues the middle. (Mean reward is not
@@ -154,6 +155,13 @@ Held-out greedy pass@1 of the GRPO checkpoints (seed 0), vs the A1 start:
 | A1 SFT (start) | 72.6% | 60.8% |
 | A2 GRPO-binary | 71.3% | 60.6% |
 | A3 GRPO-partial | 72.6% | 60.1% |
+
+Seed-2 replication:
+
+| pass@1 (plus) | HumanEval+ | MBPP+ |
+|---|:---:|:---:|
+| A2 GRPO-binary | 73.8% | 59.5% |
+| A3 GRPO-partial | 71.3% | 60.1% |
 
 **Finding (null, and the honest headline).** One epoch of LoRA GRPO — with *either*
 reward — does **not** move held-out pass@1 off the SFT start (all deltas ≤1.5%, some
@@ -172,8 +180,12 @@ reward rises within training (0.32→~0.68) but the policy barely moves on held-
 This also echoes DeepSeek-R1 (distillation > RL at small scale) and Yue 2025 (RL
 sharpens rather than extends — see pass@k below).
 
-_Exact paired-bootstrap CIs / McNemar pending a `python -m analysis.compare` run on
-the per-task `eval_results.json` (on the data disk, not in git)._
+The exact seed-2 paired comparison is small and inconsistent across benchmarks:
+A2−A3 is +2.44 points on HumanEval+ (paired bootstrap 95% CI +0.61 to +4.88;
+McNemar p=0.125) and −0.53 on MBPP+ (95% CI −2.12 to +1.06; McNemar p=0.754).
+It does not establish a consistent endpoint winner after considering both
+benchmarks and multiplicity. The serialized comparison is in
+`results/a2_a3_seed2_comparison.json`.
 
 ## pass@k — sharpening vs. extending (RQ4)
 
@@ -188,6 +200,13 @@ pass@k on the `+` set (temperature 0.8, n=64; evalplus estimator):
 | **A0'** 7B teacher | 82.3 / 67.2 | 91.0 / 80.5 | 93.7 / 86.3 | 94.5 / 89.4 |
 
 (Each cell is HumanEval+ / MBPP+.)
+
+Seed-2 pass@k replication (each cell is again HumanEval+ / MBPP+):
+
+| pass@k (plus) | k=1 | k=4 | k=16 | k=64 |
+|---|:---:|:---:|:---:|:---:|
+| **A2** binary | 70.1 / 59.7 | 82.1 / 71.1 | 86.9 / 77.7 | 89.0 / 81.7 |
+| **A3** partial | 69.9 / 59.5 | 82.4 / 70.9 | 87.4 / 77.8 | 90.2 / 83.1 |
 
 **Finding (RQ4).** Post-training **sharpens but does not extend**. SFT/RL lift the
 low-k end (HumanEval+ pass@1 61.8 → ~71) by concentrating probability mass on the
