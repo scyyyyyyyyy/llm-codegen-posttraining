@@ -214,7 +214,6 @@ statistical rigor, and an explicit contamination audit — on a \$0–300 budget
 - [x] Contamination-safe eval verification (164/164 ground-truth, classifier checks)
 - [x] A0 student baseline (HumanEval+ / MBPP+)
 - [x] A0' teacher baseline + pass@k
-- [ ] pass@k for A0 (student)
 - [x] pass@k for A0 (student) — HumanEval+ 92.1% / MBPP+ 84.7% @k=64
 - [x] A1 SFT (distilled from teacher) — seed 0: pass@1 + EPR@init
 - [x] A2/A3 GRPO binary vs partial — **EPR 0.325 vs 0.480 over 3 seeds** (RQ1 mechanism)
