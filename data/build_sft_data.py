@@ -72,6 +72,12 @@ def main() -> None:
     p.add_argument("--out-prefix", default="data/sft")
     p.add_argument("--k", type=int, default=K)
     p.add_argument("--eval-workers", type=int, default=8)
+    p.add_argument(
+        "--seed",
+        type=int,
+        default=0,
+        help="vLLM sampling seed; record this with the generated JSONL files",
+    )
     args = p.parse_args()
 
     pool = read_jsonl(args.pool)
@@ -84,7 +90,7 @@ def main() -> None:
     t_out = teacher.generate(
         _chat_prompts(tk_t, pool),
         SamplingParams(n=args.k, temperature=TEMPERATURE, top_p=TOP_P,
-                       max_tokens=MAX_TOKENS))
+                       max_tokens=MAX_TOKENS, seed=args.seed))
     del teacher
 
     # --- student: greedy for learnability ---
@@ -92,7 +98,8 @@ def main() -> None:
     student = LLM(model=args.student, max_model_len=2048)
     s_out = student.generate(
         _chat_prompts(tk_s, pool),
-        SamplingParams(n=1, temperature=0.0, max_tokens=MAX_TOKENS))
+        SamplingParams(n=1, temperature=0.0, max_tokens=MAX_TOKENS,
+                       seed=args.seed))
     del student
 
     # --- verify (execution filter) ---
@@ -127,7 +134,8 @@ def main() -> None:
     write_jsonl(f"{args.out_prefix}_div.jsonl", div_rows)
     write_jsonl(f"{args.out_prefix}_learn.jsonl", learn_rows)
     print(f"verified problems: {len(base_rows)}  "
-          f"(div examples {len(div_rows)}, learnable-frontier {len(learn_rows)})")
+          f"(div examples {len(div_rows)}, learnable-frontier {len(learn_rows)}, "
+          f"seed {args.seed})")
 
 
 if __name__ == "__main__":

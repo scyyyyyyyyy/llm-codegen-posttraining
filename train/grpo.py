@@ -23,6 +23,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from data.common import extract_code, read_jsonl
 from eval.epr import group_has_gradient
 from eval.rewards import binary_reward, partial_reward
+from eval.sandbox import run_one
 
 SYSTEM = "You are an expert Python programmer. Write clean, correct code."
 
@@ -40,11 +41,13 @@ class RewardFn:
     """Callable reward for GRPOTrainer that also logs EPR per generation group."""
 
     def __init__(self, reward_type: str, num_generations: int, log_path: str,
-                 subsample: int | None = None, resume_step: int | None = None):
+                 subsample: int | None = None, seed: int = 0,
+                 resume_step: int | None = None):
         self.reward_type = reward_type
         self.g = num_generations
         self.log_path = log_path
         self.subsample = subsample
+        self.seed = seed
         self.step = 0
         os.makedirs(os.path.dirname(log_path) or ".", exist_ok=True)
         if resume_step is not None:
@@ -56,37 +59,93 @@ class RewardFn:
             if len(lines) < resume_step:
                 raise ValueError(
                     f"cannot resume at step {resume_step}: EPR log has only {len(lines)} records")
+            # A job may fail after the last durable Trainer checkpoint. Discard
+            # the non-checkpointed tail so the resumed curve has one record per
+            # committed update rather than duplicate work.
             with open(log_path, "w") as f:
                 f.writelines(lines[:resume_step])
             self.step = resume_step
         else:
-            with open(log_path, "w"):
-                pass
+            open(log_path, "w").close()
 
-    def __call__(self, prompts, completions, tests=None, entry_point=None, **kw):
+    @staticmethod
+    def _pass_fraction(code: str, tests: list[str]) -> float:
+        if not tests:
+            return 0.0
+        return sum(run_one(code, t, None).passed for t in tests) / len(tests)
+
+    def __call__(self, prompts, completions, tests=None, heldout_tests=None,
+                 entry_point=None, **kw):
         import random
 
         codes = [extract_code(_completion_text(c)) for c in completions]
         if tests is None or len(tests) != len(codes):
             raise ValueError("TRL must provide one test list per completion")
+        if heldout_tests is None:
+            heldout_tests = [[] for _ in codes]
+
         rewards = []
-        for code, ts in zip(codes, tests):
-            use = ts
-            if self.subsample and len(ts) > self.subsample:
-                use = random.sample(ts, self.subsample)
-            # pool tests are plain asserts that call the fn directly -> entry_point
-            # must be None (no check() wrapper), matching build_sft_data / epr_init.
-            if self.reward_type == "binary":
-                rewards.append(binary_reward(code, use))
-            else:
-                rewards.append(partial_reward(code, use))
+        visible_scores: list[float] = []
+        heldout_scores: list[float] = []
+        visible_all: list[float] = []
+        heldout_all: list[float] = []
+        # The same visible subset must be used for every rollout in a prompt group;
+        # otherwise GRPO compares rewards computed against different objectives.
+        rng = random.Random((self.seed + 1) * 1_000_003 + self.step)
+        for start in range(0, len(codes), self.g):
+            stop = min(start + self.g, len(codes))
+            group_tests = [list(x) for x in tests[start:stop]]
+            canonical = group_tests[0]
+            if any(x != canonical for x in group_tests[1:]):
+                raise ValueError("completions in one GRPO group have different tests")
+
+            explicit_heldout = [list(x) for x in heldout_tests[start:stop]]
+            canonical_heldout = explicit_heldout[0] if explicit_heldout else []
+            if any(x != canonical_heldout for x in explicit_heldout[1:]):
+                raise ValueError("completions in one GRPO group have different held-out tests")
+
+            use = canonical
+            heldout = canonical_heldout
+            if not heldout and self.subsample and len(canonical) > self.subsample:
+                chosen = sorted(rng.sample(range(len(canonical)), self.subsample))
+                chosen_set = set(chosen)
+                use = [canonical[i] for i in chosen]
+                heldout = [t for i, t in enumerate(canonical) if i not in chosen_set]
+
+            for code in codes[start:stop]:
+                # Pool tests are plain asserts that call the function directly, so
+                # entry_point must be None (no EvalPlus check() wrapper).
+                if self.reward_type == "binary":
+                    rewards.append(binary_reward(code, use))
+                else:
+                    rewards.append(partial_reward(code, use))
+
+                if heldout:
+                    vis = self._pass_fraction(code, use)
+                    hid = self._pass_fraction(code, heldout)
+                    visible_scores.append(vis)
+                    heldout_scores.append(hid)
+                    visible_all.append(float(vis == 1.0))
+                    heldout_all.append(float(hid == 1.0))
 
         # EPR: contiguous groups of G share a prompt in TRL GRPO ordering.
         groups = [rewards[i:i + self.g] for i in range(0, len(rewards), self.g)]
         epr = sum(group_has_gradient(gr) for gr in groups) / max(1, len(groups))
         mean_r = sum(rewards) / max(1, len(rewards))
+        record = {"step": self.step, "epr": epr, "mean_reward": mean_r}
+        if heldout_scores:
+            visible_pass = sum(visible_scores) / len(visible_scores)
+            heldout_pass = sum(heldout_scores) / len(heldout_scores)
+            record.update({
+                "visible_test_pass_rate": visible_pass,
+                "heldout_test_pass_rate": heldout_pass,
+                "hacking_gap": visible_pass - heldout_pass,
+                "visible_all_pass_rate": sum(visible_all) / len(visible_all),
+                "heldout_all_pass_rate": sum(heldout_all) / len(heldout_all),
+                "n_heldout_rollouts": len(heldout_scores),
+            })
         with open(self.log_path, "a") as f:
-            f.write(json.dumps({"step": self.step, "epr": epr, "mean_reward": mean_r}) + "\n")
+            f.write(json.dumps(record) + "\n")
         self.step += 1
         return rewards
 
@@ -103,6 +162,7 @@ def build_dataset(pool_path: str):
                  "content": f"Problem:\n{r['prompt_text']}\n\nWrite the function `{r['entry_point']}`."},
             ],
             "tests": r["tests"],
+            "heldout_tests": r.get("heldout_tests", []),
             "entry_point": r["entry_point"],
         }
         for r in rows
@@ -115,7 +175,13 @@ def validate_generation_batch(
     num_generations: int,
     expected_effective_batch_size: int,
 ) -> int:
-    """Guard against silently changing the rollout/update budget."""
+    """Validate the rollout/update budget and return its effective batch size.
+
+    TRL generates one completion batch across all gradient-accumulation
+    microbatches.  Keeping this product fixed lets us lower the training
+    microbatch on a 24 GB card without silently changing the number of
+    rollouts, prompt groups, or optimizer updates in the experiment.
+    """
     values = {
         "per_device_train_batch_size": per_device_train_batch_size,
         "gradient_accumulation_steps": gradient_accumulation_steps,
@@ -150,6 +216,8 @@ def main() -> None:
     p.add_argument("--num-generations", type=int, default=8)
     p.add_argument("--max-prompts", type=int, default=None,
                    help="limit the pool for a smoke test; unset for a full run")
+    p.add_argument("--pad-prompts-to-generation-batch", action="store_true",
+                   help="repeat a few prompts so TRL does not drop a short final batch")
     p.add_argument("--max-steps", type=int, default=-1,
                    help="override epoch length; use 1 for a smoke test")
     p.add_argument("--per-device-train-batch-size", type=int, default=8)
@@ -165,10 +233,11 @@ def main() -> None:
         help="trade compute for activation memory without changing rollout budget",
     )
     p.add_argument("--save-steps", type=int, default=100)
-    p.add_argument("--epr-log", default=None)
+    p.add_argument("--epr-log", default=None,
+                   help="override the EPR JSONL path (useful for isolated smoke runs)")
     p.add_argument("--resume-from-checkpoint", default=None)
     p.add_argument("--skip-merge", action="store_true",
-                   help="save only the adapter (useful for a smoke test)")
+                   help="save only the adapter (useful for a one-step smoke test)")
     p.add_argument("--lr", type=float, default=2e-6)
     p.add_argument("--beta", type=float, default=0.0, help="KL coeff; raise if output degrades")
     p.add_argument("--seed", type=int, default=0)
@@ -189,6 +258,9 @@ def main() -> None:
             "effective_batch_size": effective_batch_size,
             "num_generations": args.num_generations,
             "prompt_groups_per_update": effective_batch_size // args.num_generations,
+            "max_completion_length": args.max_completion_length,
+            "vllm_gpu_memory_utilization": args.vllm_gpu_memory_utilization,
+            "gradient_checkpointing": args.gradient_checkpointing,
         }
     }, sort_keys=True))
 
@@ -199,10 +271,26 @@ def main() -> None:
     ds = build_dataset(args.pool)
     if args.max_prompts is not None:
         ds = ds.select(range(min(args.max_prompts, len(ds))))
+    if args.pad_prompts_to_generation_batch:
+        from datasets import concatenate_datasets
+
+        generation_batch = (
+            args.per_device_train_batch_size * args.gradient_accumulation_steps
+        )
+        if generation_batch % args.num_generations:
+            p.error("training generation batch must be divisible by --num-generations")
+        unique_prompts = generation_batch // args.num_generations
+        missing = (-len(ds)) % unique_prompts
+        if missing:
+            ds = concatenate_datasets([ds, ds.select(range(missing))])
+            print(
+                f"padded prompt dataset by {missing}: "
+                f"{len(ds) - missing} -> {len(ds)} (generation groups={unique_prompts})"
+            )
     # seed 0 keeps the original (already-committed) filename; seeds >0 get a
     # suffix so multi-seed runs never clobber each other's EPR curves.
     seed_sfx = "" if args.seed == 0 else f"_s{args.seed}"
-    tag = args.reward + ("-sub" if args.subsample else "") + seed_sfx
+    tag = args.reward + (f"-sub{args.subsample}" if args.subsample else "") + seed_sfx
     epr_log = args.epr_log or f"results/epr_curve_{tag}.jsonl"
     resume_step = None
     if args.resume_from_checkpoint:
@@ -210,7 +298,8 @@ def main() -> None:
         with open(state_path) as f:
             resume_step = int(json.load(f)["global_step"])
     reward = RewardFn(args.reward, args.num_generations,
-                      epr_log, args.subsample, resume_step=resume_step)
+                      epr_log, args.subsample, args.seed,
+                      resume_step=resume_step)
 
     lora = LoraConfig(
         r=32, lora_alpha=64, lora_dropout=0.05,
@@ -264,7 +353,7 @@ def main() -> None:
     adapter_dir = args.out + "-train/adapter"
     trainer.save_model(adapter_dir)
     if args.skip_merge:
-        print(f"training adapter saved -> {adapter_dir}; merge skipped")
+        print(f"smoke/training adapter saved -> {adapter_dir}; merge skipped")
         return
     del trainer
     gc.collect()

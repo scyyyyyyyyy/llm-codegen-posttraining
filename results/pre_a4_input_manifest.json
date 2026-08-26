@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "scope": "A1 through A3-prime plus the matched A3 confirmatory control",
+  "repository_base_commit": "f258e326faae9da18e0fe4f2d0ceaa2939e444ee",
+  "code_note": "The runs used the working-tree changes represented by this PR on top of the base commit; the base hash is not claimed as the exact executed tree.",
+  "note": "The existing 254-row SFT snapshot was generated before a vLLM seed was recorded. The exact inputs are checked in under data/snapshots/pre_a4; future builds use --seed.",
+  "files": {
+    "data/snapshots/pre_a4/prompt_pool.clean.jsonl": {
+      "rows": 392,
+      "bytes": 367436,
+      "sha256": "03cad62c6988d674ae05f301a0fa8d6bdf1affd966e75ccf0bdc46f17ad91287"
+    },
+    "data/snapshots/pre_a4/prompt_pool.a3prime.jsonl": {
+      "rows": 310,
+      "bytes": 265121,
+      "sha256": "66c08352c0799ed6677a28e422c6ab3dce1a48c4baa4296a452232a83d027cfd"
+    },
+    "data/snapshots/pre_a4/prompt_pool.a3matched.jsonl": {
+      "rows": 310,
+      "bytes": 281861,
+      "sha256": "4edfb977f4b96abff8e40e575710ed6910bc2d89939fed6e1cd493f628129cc3"
+    },
+    "data/snapshots/pre_a4/sft_base.jsonl": {
+      "rows": 254,
+      "bytes": 284807,
+      "sha256": "dd218cb418aaa90b3df03f0d2d38b46cd87a05a005fdccb572a2d34ef04321d3"
+    }
+  },
+  "local_source_archive": {
+    "name": "pre_a4_exact_inputs.tar.gz",
+    "bytes": 191016,
+    "sha256": "743fe39fa10b2758bae6ee62fc3eff85af28b35b8ce1d7bf3f5b5ce5f9c4fcbe",
+    "note": "Local preservation source; the checked-in snapshots are sufficient for reproduction."
+  }
+}

@@ -24,6 +24,16 @@ def main() -> None:
     p.add_argument("--epochs", type=int, default=3)
     p.add_argument("--lr", type=float, default=2e-4)
     p.add_argument("--lora-r", type=int, default=32)
+    p.add_argument("--max-samples", type=int, default=None,
+                   help="limit the dataset for a smoke test; unset for a full run")
+    p.add_argument("--max-steps", type=int, default=-1,
+                   help="override epoch length; use 1 for a smoke test")
+    p.add_argument("--per-device-train-batch-size", type=int, default=4)
+    p.add_argument("--gradient-accumulation-steps", type=int, default=4)
+    p.add_argument("--save-steps", type=int, default=200)
+    p.add_argument("--resume-from-checkpoint", default=None)
+    p.add_argument("--skip-merge", action="store_true",
+                   help="save only the adapter (useful for a one-step smoke test)")
     p.add_argument("--push-to-hub", default=None, help="HF repo id, e.g. user/a1-sft")
     args = p.parse_args()
 
@@ -35,6 +45,8 @@ def main() -> None:
     # Conversational dataset: each row is {"messages": [...]}. SFTTrainer applies
     # the chat template itself; assistant_only_loss masks the prompt tokens.
     ds = load_dataset("json", data_files=args.data, split="train")
+    if args.max_samples is not None:
+        ds = ds.select(range(min(args.max_samples, len(ds))))
 
     lora = LoraConfig(
         r=args.lora_r, lora_alpha=2 * args.lora_r, lora_dropout=0.05,
@@ -50,17 +62,20 @@ def main() -> None:
     cfg = SFTConfig(
         output_dir=train_dir,
         num_train_epochs=args.epochs,
-        per_device_train_batch_size=4,
-        gradient_accumulation_steps=4,     # effective batch 16
+        max_steps=args.max_steps,
+        per_device_train_batch_size=args.per_device_train_batch_size,
+        gradient_accumulation_steps=args.gradient_accumulation_steps,
         learning_rate=args.lr,
         lr_scheduler_type="cosine",
-        warmup_ratio=0.05,
+        # Transformers 5.x folds the ratio form into warmup_steps: values in
+        # [0, 1) are interpreted as a fraction of total training steps.
+        warmup_steps=0.05,
         max_length=2048,
         packing=False,
         assistant_only_loss=True,          # completion-only loss (mask the prompt)
         bf16=torch.cuda.is_available(),
         logging_steps=20,
-        save_steps=200,                    # best checkpoint is often mid-training
+        save_steps=args.save_steps,        # best checkpoint is often mid-training
         save_total_limit=8,
         seed=args.seed,
         report_to="wandb" if os.getenv("WANDB_API_KEY") else "none",
@@ -72,7 +87,7 @@ def main() -> None:
         train_dataset=ds,
         peft_config=lora,
     )
-    trainer.train()
+    trainer.train(resume_from_checkpoint=args.resume_from_checkpoint)
 
     # Save the LoRA adapter, then merge it into a FRESH base model. Merging the
     # live trainer model leaves a 'base_model.' prefix on the weights that vLLM
@@ -85,6 +100,9 @@ def main() -> None:
 
     adapter_dir = train_dir + "/adapter"
     trainer.save_model(adapter_dir)
+    if args.skip_merge:
+        print(f"smoke/training adapter saved -> {adapter_dir}; merge skipped")
+        return
     del trainer
     gc.collect()
     torch.cuda.empty_cache()

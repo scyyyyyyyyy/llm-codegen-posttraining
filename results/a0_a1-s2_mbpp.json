@@ -1,0 +1,54 @@
+{
+  "arm": "A1",
+  "dataset": "mbpp",
+  "tag": "a1-s2",
+  "n_tasks": 378,
+  "pass@1_base": 0.7142857142857143,
+  "pass@1_plus": 0.5978835978835979,
+  "pass@1_plus_by_difficulty": {
+    "easy": 0.7142857142857143,
+    "medium": 0.6060606060606061,
+    "hard": 0.4146341463414634
+  },
+  "error_breakdown": {
+    "correct": 70.8994708994709,
+    "syntax_error": 0,
+    "runtime_error": 5.555555555555555,
+    "logic_error": 23.544973544973544,
+    "timeout": 0
+  },
+  "error_breakdown_by_difficulty": {
+    "easy": {
+      "correct": 81.48148148148148,
+      "syntax_error": 0,
+      "runtime_error": 3.7037037037037037,
+      "logic_error": 14.814814814814815,
+      "timeout": 0
+    },
+    "medium": {
+      "correct": 72.72727272727273,
+      "syntax_error": 0,
+      "runtime_error": 4.545454545454546,
+      "logic_error": 22.727272727272727,
+      "timeout": 0
+    },
+    "hard": {
+      "correct": 53.65853658536585,
+      "syntax_error": 0,
+      "runtime_error": 8.94308943089431,
+      "logic_error": 37.39837398373984,
+      "timeout": 0
+    }
+  },
+  "difficulty_counts": {
+    "easy": 189,
+    "medium": 66,
+    "hard": 123
+  },
+  "pass@k_plus": {
+    "1": 0.5975115740740741,
+    "4": 0.713442335823414,
+    "16": 0.7817800784439313,
+    "64": 0.8253968253968254
+  }
+}

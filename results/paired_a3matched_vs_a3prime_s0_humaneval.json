@@ -1,0 +1,46 @@
+{
+  "labels": [
+    "A3matched",
+    "A3prime"
+  ],
+  "dataset": "humaneval",
+  "n": 164,
+  "pass@1_A3matched": 0.6951219512195121,
+  "pass@1_A3prime": 0.6951219512195121,
+  "delta_ci": {
+    "delta": 0.0,
+    "ci_low": 0.0,
+    "ci_high": 0.0,
+    "p_value": 1.0,
+    "n": 164
+  },
+  "mcnemar": {
+    "b": 0,
+    "c": 0,
+    "p_value": 1.0
+  },
+  "stratified": {
+    "easy": {
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p_value": 1.0,
+      "n": 68
+    },
+    "medium": {
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p_value": 1.0,
+      "n": 54
+    },
+    "hard": {
+      "delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p_value": 1.0,
+      "n": 42
+    }
+  },
+  "mde_80pct_power": 0.15469166553247343
+}

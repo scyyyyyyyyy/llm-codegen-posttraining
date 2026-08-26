@@ -1,5 +1,5 @@
 {
-  "arm": "A0",
+  "arm": "A1",
   "dataset": "humaneval",
   "tag": "a1-sft",
   "n_tasks": 164,

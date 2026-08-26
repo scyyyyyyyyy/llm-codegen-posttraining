@@ -1,0 +1,339 @@
+{
+  "design": "A3-prime versus full-reward A3 matched on prompt IDs, 78 steps, seed-matched A1 starts",
+  "seeds": [
+    {
+      "seed": 0,
+      "epr_mean": 0.46474358974358976,
+      "matched_visible_minus_heldout": -0.016129032258064502,
+      "a3prime_visible_minus_heldout": -0.016129032258064502,
+      "a3prime_minus_matched_gap_effect": {
+        "delta": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "p_value": 1.0,
+        "n": 310
+      },
+      "endpoint_comparisons_matched_minus_a3prime": {
+        "humaneval": {
+          "labels": [
+            "A3matched",
+            "A3prime"
+          ],
+          "dataset": "humaneval",
+          "n": 164,
+          "pass@1_A3matched": 0.6951219512195121,
+          "pass@1_A3prime": 0.6951219512195121,
+          "delta_ci": {
+            "delta": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "p_value": 1.0,
+            "n": 164
+          },
+          "mcnemar": {
+            "b": 0,
+            "c": 0,
+            "p_value": 1.0
+          },
+          "stratified": {
+            "easy": {
+              "delta": 0.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "p_value": 1.0,
+              "n": 68
+            },
+            "medium": {
+              "delta": 0.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "p_value": 1.0,
+              "n": 54
+            },
+            "hard": {
+              "delta": 0.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "p_value": 1.0,
+              "n": 42
+            }
+          },
+          "mde_80pct_power": 0.15469166553247343
+        },
+        "mbpp": {
+          "labels": [
+            "A3matched",
+            "A3prime"
+          ],
+          "dataset": "mbpp",
+          "n": 378,
+          "pass@1_A3matched": 0.5846560846560847,
+          "pass@1_A3prime": 0.582010582010582,
+          "delta_ci": {
+            "delta": 0.0026455026455026454,
+            "ci_low": -0.015873015873015872,
+            "ci_high": 0.021164021164021163,
+            "p_value": 0.8974,
+            "n": 378
+          },
+          "mcnemar": {
+            "b": 6,
+            "c": 7,
+            "p_value": 1.0
+          },
+          "stratified": {
+            "easy": {
+              "delta": 0.0,
+              "ci_low": -0.031746031746031744,
+              "ci_high": 0.026455026455026454,
+              "p_value": 1.0,
+              "n": 189
+            },
+            "medium": {
+              "delta": 0.030303030303030304,
+              "ci_low": -0.030303030303030304,
+              "ci_high": 0.09090909090909091,
+              "p_value": 0.4494,
+              "n": 66
+            },
+            "hard": {
+              "delta": -0.008130081300813009,
+              "ci_low": -0.024390243902439025,
+              "ci_high": 0.0,
+              "p_value": 0.7216,
+              "n": 123
+            }
+          },
+          "mde_80pct_power": 0.10189266926882573
+        }
+      }
+    },
+    {
+      "seed": 1,
+      "epr_mean": 0.46794871794871795,
+      "matched_visible_minus_heldout": -0.008064516129032251,
+      "a3prime_visible_minus_heldout": -0.004838709677419284,
+      "a3prime_minus_matched_gap_effect": {
+        "delta": 0.0032258064516129032,
+        "ci_low": 0.0,
+        "ci_high": 0.00967741935483871,
+        "p_value": 0.7426,
+        "n": 310
+      },
+      "endpoint_comparisons_matched_minus_a3prime": {
+        "humaneval": {
+          "labels": [
+            "A3matched",
+            "A3prime"
+          ],
+          "dataset": "humaneval",
+          "n": 164,
+          "pass@1_A3matched": 0.7073170731707317,
+          "pass@1_A3prime": 0.7317073170731707,
+          "delta_ci": {
+            "delta": -0.024390243902439025,
+            "ci_low": -0.04878048780487805,
+            "ci_high": -0.006097560975609756,
+            "p_value": 0.033,
+            "n": 164
+          },
+          "mcnemar": {
+            "b": 4,
+            "c": 0,
+            "p_value": 0.125
+          },
+          "stratified": {
+            "easy": {
+              "delta": -0.014705882352941176,
+              "ci_low": -0.04411764705882353,
+              "ci_high": 0.0,
+              "p_value": 0.7278,
+              "n": 68
+            },
+            "medium": {
+              "delta": -0.018518518518518517,
+              "ci_low": -0.05555555555555555,
+              "ci_high": 0.0,
+              "p_value": 0.7598,
+              "n": 54
+            },
+            "hard": {
+              "delta": -0.047619047619047616,
+              "ci_low": -0.11904761904761904,
+              "ci_high": 0.0,
+              "p_value": 0.2582,
+              "n": 42
+            }
+          },
+          "mde_80pct_power": 0.15469166553247343
+        },
+        "mbpp": {
+          "labels": [
+            "A3matched",
+            "A3prime"
+          ],
+          "dataset": "mbpp",
+          "n": 378,
+          "pass@1_A3matched": 0.58994708994709,
+          "pass@1_A3prime": 0.6005291005291006,
+          "delta_ci": {
+            "delta": -0.010582010582010581,
+            "ci_low": -0.021164021164021163,
+            "ci_high": -0.0026455026455026454,
+            "p_value": 0.0352,
+            "n": 378
+          },
+          "mcnemar": {
+            "b": 4,
+            "c": 0,
+            "p_value": 0.125
+          },
+          "stratified": {
+            "easy": {
+              "delta": -0.015873015873015872,
+              "ci_low": -0.037037037037037035,
+              "ci_high": 0.0,
+              "p_value": 0.0938,
+              "n": 189
+            },
+            "medium": {
+              "delta": -0.015151515151515152,
+              "ci_low": -0.045454545454545456,
+              "ci_high": 0.0,
+              "p_value": 0.7362,
+              "n": 66
+            },
+            "hard": {
+              "delta": 0.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "p_value": 1.0,
+              "n": 123
+            }
+          },
+          "mde_80pct_power": 0.10189266926882573
+        }
+      }
+    },
+    {
+      "seed": 2,
+      "epr_mean": 0.5064102564102564,
+      "matched_visible_minus_heldout": -0.001612903225806428,
+      "a3prime_visible_minus_heldout": -0.004838709677419284,
+      "a3prime_minus_matched_gap_effect": {
+        "delta": -0.0032258064516129032,
+        "ci_low": -0.00967741935483871,
+        "ci_high": 0.0,
+        "p_value": 0.7336,
+        "n": 310
+      },
+      "endpoint_comparisons_matched_minus_a3prime": {
+        "humaneval": {
+          "labels": [
+            "A3matched",
+            "A3prime"
+          ],
+          "dataset": "humaneval",
+          "n": 164,
+          "pass@1_A3matched": 0.725609756097561,
+          "pass@1_A3prime": 0.7195121951219512,
+          "delta_ci": {
+            "delta": 0.006097560975609756,
+            "ci_low": -0.012195121951219513,
+            "ci_high": 0.03048780487804878,
+            "p_value": 0.799,
+            "n": 164
+          },
+          "mcnemar": {
+            "b": 1,
+            "c": 2,
+            "p_value": 1.0
+          },
+          "stratified": {
+            "easy": {
+              "delta": 0.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "p_value": 1.0,
+              "n": 68
+            },
+            "medium": {
+              "delta": -0.018518518518518517,
+              "ci_low": -0.05555555555555555,
+              "ci_high": 0.0,
+              "p_value": 0.7122,
+              "n": 54
+            },
+            "hard": {
+              "delta": 0.047619047619047616,
+              "ci_low": 0.0,
+              "ci_high": 0.11904761904761904,
+              "p_value": 0.2586,
+              "n": 42
+            }
+          },
+          "mde_80pct_power": 0.15469166553247343
+        },
+        "mbpp": {
+          "labels": [
+            "A3matched",
+            "A3prime"
+          ],
+          "dataset": "mbpp",
+          "n": 378,
+          "pass@1_A3matched": 0.58994708994709,
+          "pass@1_A3prime": 0.5873015873015873,
+          "delta_ci": {
+            "delta": 0.0026455026455026454,
+            "ci_low": -0.010582010582010581,
+            "ci_high": 0.015873015873015872,
+            "p_value": 0.837,
+            "n": 378
+          },
+          "mcnemar": {
+            "b": 3,
+            "c": 4,
+            "p_value": 1.0
+          },
+          "stratified": {
+            "easy": {
+              "delta": 0.005291005291005291,
+              "ci_low": -0.010582010582010581,
+              "ci_high": 0.021164021164021163,
+              "p_value": 0.7956,
+              "n": 189
+            },
+            "medium": {
+              "delta": 0.015151515151515152,
+              "ci_low": -0.030303030303030304,
+              "ci_high": 0.07575757575757576,
+              "p_value": 0.77,
+              "n": 66
+            },
+            "hard": {
+              "delta": -0.008130081300813009,
+              "ci_low": -0.024390243902439025,
+              "ci_high": 0.0,
+              "p_value": 0.7136,
+              "n": 123
+            }
+          },
+          "mde_80pct_power": 0.10189266926882573
+        }
+      }
+    }
+  ],
+  "holm_bonferroni_endpoint_rejections": {
+    "s1_humaneval": false,
+    "s1_mbpp": false,
+    "s2_humaneval": false,
+    "s2_mbpp": false,
+    "s0_mbpp": false,
+    "s0_humaneval": false
+  },
+  "aggregate": {
+    "matched_epr_mean": 0.4797008547008547,
+    "matched_gap_mean": -0.008602150537634393,
+    "a3prime_gap_mean": -0.008602150537634357
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "arm": "A3'",
+  "dataset": "humaneval",
+  "tag": "a3prime-s1",
+  "n_tasks": 164,
+  "pass@1_base": 0.774390243902439,
+  "pass@1_plus": 0.7317073170731707,
+  "pass@1_plus_by_difficulty": {
+    "easy": 0.7794117647058824,
+    "medium": 0.6851851851851852,
+    "hard": 0.7142857142857143
+  },
+  "error_breakdown": {
+    "correct": 76.21951219512195,
+    "syntax_error": 0,
+    "runtime_error": 6.097560975609756,
+    "logic_error": 17.682926829268293,
+    "timeout": 0
+  },
+  "error_breakdown_by_difficulty": {
+    "easy": {
+      "correct": 80.88235294117646,
+      "syntax_error": 0,
+      "runtime_error": 4.411764705882353,
+      "logic_error": 14.705882352941176,
+      "timeout": 0
+    },
+    "medium": {
+      "correct": 70.37037037037037,
+      "syntax_error": 0,
+      "runtime_error": 7.407407407407407,
+      "logic_error": 22.22222222222222,
+      "timeout": 0
+    },
+    "hard": {
+      "correct": 76.19047619047619,
+      "syntax_error": 0,
+      "runtime_error": 7.142857142857143,
+      "logic_error": 16.666666666666668,
+      "timeout": 0
+    }
+  },
+  "difficulty_counts": {
+    "easy": 68,
+    "medium": 54,
+    "hard": 42
+  }
+}

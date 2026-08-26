@@ -6,8 +6,8 @@ reward:
   type: partial
   compile_bonus: 0.1
   no_runtime_error_bonus: 0.1
-  subsample_visible_tests: true     # reward on a random visible-test subset each step
-  visible_subset_size: 3            # e.g. MBPP's original 3 asserts
+  subsample_visible_tests: true     # reward only on the fixed visible split
+  visible_subset_size: 1            # clean MBPP prompts have exactly 3 assertions
 
 grpo:
   num_generations: 8
@@ -18,7 +18,7 @@ grpo:
   inference_engine: vllm_colocate
 
 eval:
-  held_out_tests: true              # measure hacking_gap = pass(visible) - pass(held_out)
+  held_out_tests: true              # remaining 2 assertions are never used for reward
 
 logging:
   epr_stratified: true

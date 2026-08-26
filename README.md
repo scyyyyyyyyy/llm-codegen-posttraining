@@ -4,9 +4,9 @@ A compute-matched empirical study of how **reward signal density** shapes
 reinforcement learning and distillation for a small code model
 (**Qwen2.5-Coder-1.5B-Instruct**) on **HumanEval+** and **MBPP+**.
 
-> **Status.** Infrastructure and the zero-shot baselines (A0, A0') are complete and
-> reproducible. Training arms (SFT → GRPO → OPD) and the statistical analysis are in
-> progress; see [Roadmap](#roadmap).
+> **Status.** The pre-A4 suite is complete: A0/A0', three-seed A1/A2/A3, and the
+> prompt- and budget-matched A3' Goodhart test are reproducible. A4 OPD and A5 remain
+> outside this pre-A4 release; see [Roadmap](#roadmap).
 
 ---
 
@@ -57,8 +57,10 @@ KL-constrained RL where the teacher's per-token log-ratio is an implicit reward.
 
 **Arms.** `A0` student baseline · `A0'` teacher baseline · `A1` SFT (shared start) ·
 `A2` GRPO-binary · `A3` GRPO-partial · `A3'` + visible-test subsampling · `A4` OPD ·
-`A5` OPD→GRPO. Every arm uses the same prompt set and SFT start, with budget aligned
-by generated tokens (GPU-hours also reported). 3 seeds per arm.
+`A5` OPD→GRPO. A2/A3 share the 392-prompt pool and training geometry. The RQ3
+comparison uses A3' and a full-reward A3 control matched on the same 310 prompt IDs,
+78 updates, seed-specific A1 starts, and GRPO batch geometry; only reward visibility
+differs. Results target 3 seeds per confirmatory arm.
 
 **Benchmarks (evaluation only).** HumanEval+ (164) and MBPP+ (378), EvalPlus suite.
 These never enter any training pool.
@@ -130,6 +132,10 @@ gradient-producing set for RL (H1 refuted — the more interesting result). The
 competence-vs-gradient-availability tension carries into A2–A4. Details in
 [docs/results.md](docs/results.md).
 
+The continuation reproduces HumanEval+ at 72.6% for seeds 1 and 2; MBPP+ is
+59.5/59.8%, and EPR@init is 32.4/34.2%. The exact continuation input has 254 rows
+and is retained separately from the historical 255-row seed-0 description.
+
 ### 4.4 A2 / A3 GRPO — reward density: mechanism yes, accuracy no
 
 The RQ1 test, in two parts:
@@ -151,14 +157,31 @@ mechanism, not a pass@1 win. pass@k (§4.1) adds the RQ4 half: post-training sha
 rather than extends. This matches the pre-registered risk plan and frames why the
 dense limit (A4 OPD) — the only arm expected to raise the pass@k ceiling — matters.
 
+### 4.5 A3' visible-test subsampling — matched null result
+
+A3' exposes one fixed assertion per training prompt and holds out every remaining
+independent assertion. Its full-reward A3 control uses the same 310 prompt IDs,
+seed-matched A1 starts, and 78-update budget. Across three seeds, the
+visible-minus-held-out gap is **−0.86 percentage points for both conditions**.
+A3' therefore does not create a detectable positive Goodhart gap in this setup.
+
+The endpoint effect is also small and unstable: matched A3 minus A3' averages
+**−0.61 pp on HumanEval+ and −0.18 pp on MBPP+**. None of the six seed×benchmark
+comparisons survives Holm-Bonferroni correction. Seed 1 has nominal paired-bootstrap
+p-values below 0.05, but exact McNemar p=0.125 on both benchmarks; the other seeds
+change sign. The supported conclusion is a matched **null**, not evidence that
+visible-test subsampling helps or hurts accuracy. Full tables are in
+[docs/results.md](docs/results.md).
+
 ## 5. Repository layout
 
 ```
 data/   build_prompt_pool.py · contamination_audit.py · build_sft_data.py
+        build_a3prime_pool.py · snapshots/pre_a4/ (exact inputs)
 train/  sft.py · grpo.py · opd.py
 eval/   sandbox.py · error_classify.py · rewards.py · epr.py
-        run_eval.py · run_a0.py · verify_pipeline.py · difficulty.py
-analysis/ stats.py + reproduction notebook
+        run_eval.py · run_a0.py · a3prime.py · verify_pipeline.py · difficulty.py
+analysis/ stats.py · compare.py · a3matched_report.py
 configs/  sft · grpo_binary · grpo_partial · grpo_partial_subsample · opd
 scripts/  run_a0.sh
 docs/     autodl.md   (GPU setup)
@@ -198,6 +221,16 @@ python train/grpo.py --reward partial --init checkpoints/a1-s2 \
 
 ARM=A2 MODEL=checkpoints/a2-binary-s2 TAG=a2-binary-s2 bash scripts/run_a0.sh
 ARM=A3 MODEL=checkpoints/a3-partial-s2 TAG=a3-partial-s2 bash scripts/run_a0.sh
+
+# Rebuild and hash-check the deterministic A3'/matched pools
+python -m data.build_a3prime_pool \
+  --pool data/snapshots/pre_a4/prompt_pool.clean.jsonl \
+  --out /tmp/prompt_pool.a3prime.jsonl \
+  --control-out /tmp/prompt_pool.a3matched.jsonl \
+  --visible-count 1 --seed 20260818
+
+# Rebuild the checked-in matched-control statistical summary
+python -m analysis.a3matched_report --out /tmp/a3matched_summary.json
 ```
 
 ## 7. Scope and limitations
@@ -215,12 +248,12 @@ statistical rigor, and an explicit contamination audit — on a \$0–300 budget
 - [x] A0 student baseline (HumanEval+ / MBPP+)
 - [x] A0' teacher baseline + pass@k
 - [x] pass@k for A0 (student) — HumanEval+ 92.1% / MBPP+ 84.7% @k=64
-- [x] A1 SFT (distilled from teacher) — seed 0: pass@1 + EPR@init
+- [x] A1 SFT (distilled from teacher) — seeds 0–2: pass@1 + EPR@init
 - [x] A2/A3 GRPO binary vs partial — **EPR 0.325 vs 0.480 over 3 seeds** (RQ1 mechanism)
 - [x] A2/A3 held-out eval + full pass@k (A0→A1→A2→A3) — **RQ1: higher EPR did *not*
   lift held-out pass@1; RQ4: post-training sharpens, not extends (pass@64 flat)**
 - [x] A2/A3 seed 2 + exact paired-bootstrap/McNemar comparison
-- [ ] A3' visible-test subsampling (RQ3 Goodhart)
+- [x] A3' visible-test subsampling + matched A3 control (3 seeds; RQ3 matched null)
 - [ ] A4 OPD + teacher–student win matrix (RQ4) — the dense limit
 - [ ] Statistical analysis writeup + blog
 

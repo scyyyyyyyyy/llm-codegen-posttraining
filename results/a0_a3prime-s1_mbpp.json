@@ -1,0 +1,48 @@
+{
+  "arm": "A3'",
+  "dataset": "mbpp",
+  "tag": "a3prime-s1",
+  "n_tasks": 378,
+  "pass@1_base": 0.7222222222222222,
+  "pass@1_plus": 0.6005291005291006,
+  "pass@1_plus_by_difficulty": {
+    "easy": 0.7407407407407407,
+    "medium": 0.5909090909090909,
+    "hard": 0.3902439024390244
+  },
+  "error_breakdown": {
+    "correct": 71.42857142857143,
+    "syntax_error": 0,
+    "runtime_error": 7.142857142857143,
+    "logic_error": 21.428571428571427,
+    "timeout": 0
+  },
+  "error_breakdown_by_difficulty": {
+    "easy": {
+      "correct": 82.53968253968254,
+      "syntax_error": 0,
+      "runtime_error": 4.232804232804233,
+      "logic_error": 13.227513227513228,
+      "timeout": 0
+    },
+    "medium": {
+      "correct": 75.75757575757575,
+      "syntax_error": 0,
+      "runtime_error": 6.0606060606060606,
+      "logic_error": 18.181818181818183,
+      "timeout": 0
+    },
+    "hard": {
+      "correct": 52.03252032520325,
+      "syntax_error": 0,
+      "runtime_error": 12.195121951219512,
+      "logic_error": 35.77235772357724,
+      "timeout": 0
+    }
+  },
+  "difficulty_counts": {
+    "easy": 189,
+    "medium": 66,
+    "hard": 123
+  }
+}

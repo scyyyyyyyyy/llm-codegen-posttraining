@@ -1,0 +1,48 @@
+{
+  "arm": "A3-matched",
+  "dataset": "mbpp",
+  "tag": "a3matched-s1",
+  "n_tasks": 378,
+  "pass@1_base": 0.7195767195767195,
+  "pass@1_plus": 0.58994708994709,
+  "pass@1_plus_by_difficulty": {
+    "easy": 0.7248677248677249,
+    "medium": 0.5757575757575758,
+    "hard": 0.3902439024390244
+  },
+  "error_breakdown": {
+    "correct": 71.16402116402116,
+    "syntax_error": 0.0,
+    "runtime_error": 7.142857142857143,
+    "logic_error": 21.693121693121693,
+    "timeout": 0.0
+  },
+  "error_breakdown_by_difficulty": {
+    "easy": {
+      "correct": 80.95238095238095,
+      "syntax_error": 0.0,
+      "runtime_error": 4.761904761904762,
+      "logic_error": 14.285714285714286,
+      "timeout": 0.0
+    },
+    "medium": {
+      "correct": 77.27272727272727,
+      "syntax_error": 0.0,
+      "runtime_error": 6.0606060606060606,
+      "logic_error": 16.666666666666668,
+      "timeout": 0.0
+    },
+    "hard": {
+      "correct": 52.84552845528455,
+      "syntax_error": 0.0,
+      "runtime_error": 11.382113821138212,
+      "logic_error": 35.77235772357724,
+      "timeout": 0.0
+    }
+  },
+  "difficulty_counts": {
+    "easy": 189,
+    "medium": 66,
+    "hard": 123
+  }
+}

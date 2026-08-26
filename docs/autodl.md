@@ -62,11 +62,11 @@ Expect `GATE: PASS ✅` (164/164 canonical solutions pass, classifier 5/5).
 
 ```bash
 export HF_ENDPOINT=https://hf-mirror.com
-MODEL=Qwen/Qwen2.5-Coder-1.5B-Instruct TAG=qwen1.5b bash scripts/run_a0.sh   # A0
-MODEL=Qwen/Qwen2.5-Coder-7B-Instruct   TAG=qwen7b   bash scripts/run_a0.sh   # A0'
+ARM=A0 MODEL=Qwen/Qwen2.5-Coder-1.5B-Instruct TAG=qwen1.5b bash scripts/run_a0.sh
+ARM="A0'" MODEL=Qwen/Qwen2.5-Coder-7B-Instruct TAG=qwen7b bash scripts/run_a0.sh
 ```
 - Greedy pass@1 is quick/cheap; `pass@k` (n=64) is the time sink. To skip it:
-  `DO_PASSK=0 MODEL=... TAG=... bash scripts/run_a0.sh`.
+  `DO_PASSK=0 ARM=... MODEL=... TAG=... bash scripts/run_a0.sh`.
 - Output: `results/a0_<tag>_<dataset>.json` (pass@1 base/plus, pass@k, error
   breakdown, difficulty stratification). Download via the VSCode file tree.
 

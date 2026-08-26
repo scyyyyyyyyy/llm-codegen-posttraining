@@ -1,0 +1,29 @@
+{
+  "data/prompt_pool.clean.jsonl": {
+    "rows": 392,
+    "sha256": "03cad62c6988d674ae05f301a0fa8d6bdf1affd966e75ccf0bdc46f17ad91287"
+  },
+  "data/prompt_pool.a3prime.jsonl": {
+    "rows": 310,
+    "sha256": "66c08352c0799ed6677a28e422c6ab3dce1a48c4baa4296a452232a83d027cfd"
+  },
+  "data/prompt_pool.a3matched.jsonl": {
+    "rows": 310,
+    "sha256": "4edfb977f4b96abff8e40e575710ed6910bc2d89939fed6e1cd493f628129cc3"
+  },
+  "design": {
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "shared_prompt_ids": true,
+    "unique_prompts": 310,
+    "padded_prompts": 312,
+    "trainer_steps": 78,
+    "num_generations": 8,
+    "effective_batch_size": 32,
+    "only_treatment_difference": "reward sees one visible test (A3-prime) versus every test (A3-matched)"
+  },
+  "post_archive_metadata_correction": "The six standard-eval summaries had the legacy arm label A0 changed to A3-matched; metrics and per-task comparisons are unchanged."
+}

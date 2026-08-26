@@ -1,42 +1,42 @@
 {
-  "arm": "A1",
+  "arm": "A3-matched",
   "dataset": "mbpp",
-  "tag": "a1",
+  "tag": "a3matched-s2",
   "n_tasks": 378,
-  "pass@1_base": 0.7248677248677249,
-  "pass@1_plus": 0.6084656084656085,
+  "pass@1_base": 0.7063492063492064,
+  "pass@1_plus": 0.58994708994709,
   "pass@1_plus_by_difficulty": {
-    "easy": 0.7301587301587301,
-    "medium": 0.6212121212121212,
+    "easy": 0.7037037037037037,
+    "medium": 0.5909090909090909,
     "hard": 0.4146341463414634
   },
   "error_breakdown": {
-    "correct": 71.95767195767196,
+    "correct": 70.1058201058201,
     "syntax_error": 0.0,
     "runtime_error": 5.8201058201058204,
-    "logic_error": 22.22222222222222,
+    "logic_error": 24.074074074074073,
     "timeout": 0.0
   },
   "error_breakdown_by_difficulty": {
     "easy": {
-      "correct": 83.5978835978836,
+      "correct": 80.95238095238095,
       "syntax_error": 0.0,
-      "runtime_error": 3.7037037037037037,
-      "logic_error": 12.698412698412698,
+      "runtime_error": 4.232804232804233,
+      "logic_error": 14.814814814814815,
       "timeout": 0.0
     },
     "medium": {
-      "correct": 75.75757575757575,
+      "correct": 72.72727272727273,
       "syntax_error": 0.0,
-      "runtime_error": 9.090909090909092,
-      "logic_error": 15.151515151515152,
+      "runtime_error": 4.545454545454546,
+      "logic_error": 22.727272727272727,
       "timeout": 0.0
     },
     "hard": {
       "correct": 52.03252032520325,
       "syntax_error": 0.0,
-      "runtime_error": 7.317073170731708,
-      "logic_error": 40.65040650406504,
+      "runtime_error": 8.94308943089431,
+      "logic_error": 39.02439024390244,
       "timeout": 0.0
     }
   },

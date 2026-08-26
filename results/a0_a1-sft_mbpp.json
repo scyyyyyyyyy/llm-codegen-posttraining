@@ -1,5 +1,5 @@
 {
-  "arm": "A0",
+  "arm": "A1",
   "dataset": "mbpp",
   "tag": "a1-sft",
   "n_tasks": 378,

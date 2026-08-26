@@ -49,15 +49,27 @@ def compute_epr(model_path: str, pool: list[dict], g: int = G,
     outs = llm.generate(prompts, SamplingParams(
         n=g, temperature=TEMPERATURE, max_tokens=MAX_TOKENS))
 
-    with_grad = 0
-    per_prompt = []
+    # Build one order-preserving execution batch instead of constructing a new
+    # process pool for every candidate (3,136 pools at G=8 on the full data).
+    jobs = []
+    prompt_spans = []
     for item, o in zip(pool, outs):
-        rewards = []
+        spans = []
         for cand in o.outputs:
             code = extract_code(cand.text)
-            jobs = [(code, t, None) for t in item["tests"]]
-            passed_all = all(r.passed for r in run_batch(jobs, workers=workers)) if jobs else False
-            rewards.append(1.0 if passed_all else 0.0)
+            start = len(jobs)
+            jobs.extend((code, t, None) for t in item["tests"])
+            spans.append((start, len(jobs)))
+        prompt_spans.append((item, spans))
+    execution = run_batch(jobs, workers=workers) if jobs else []
+
+    with_grad = 0
+    per_prompt = []
+    for item, spans in prompt_spans:
+        rewards = [
+            1.0 if b > a and all(r.passed for r in execution[a:b]) else 0.0
+            for a, b in spans
+        ]
         has = group_has_gradient(rewards)
         with_grad += int(has)
         per_prompt.append({"id": item["id"], "mean_reward": sum(rewards) / len(rewards),

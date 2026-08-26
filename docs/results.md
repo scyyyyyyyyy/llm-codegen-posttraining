@@ -119,8 +119,9 @@ are pure generalization from the distilled data.
 learnable set and diversity for the subsequent RL. This tension (competence vs
 gradient-availability/diversity) is the through-line into A2/A3 (RL) and A4 (OPD).
 
-Caveats: single seed; pass@k (to confirm diversity collapse), seeds 1–2, and the
-diversity/learnability ablations still to run.
+The continuation reproduces seed 0's HumanEval+ pass@1 exactly at 72.6% for seeds
+1 and 2; MBPP+ is 59.5% and 59.8%. EPR@init is 32.4% and 34.2%, close to seed 0's
+32.9%. The diversity/learnability ablations remain pending.
 
 ## A2 / A3 — GRPO binary vs partial credit (RQ1)
 
@@ -216,6 +217,54 @@ those solutions given 64 tries; post-training reranks rather than expands the
 reachable set. This is a textbook instance of the "RL sharpens, not extends"
 argument (Yue et al., 2025), now visible on the student itself. Only the 7B teacher
 sits on a genuinely higher pass@k curve — the ceiling OPD (A4) targets.
+
+## A3' — fixed visible tests versus matched full reward (RQ3)
+
+A3' trains on the 310 clean MBPP prompts that have at least two independent
+assertions. One deterministic assertion is visible to reward and all remaining
+assertions are held out. The confirmatory A3 control uses exactly the same prompt
+IDs, seed-matched A1 starts, 78 trainer updates, G=8, and effective batch size 32,
+but exposes every assertion to the partial-credit reward.
+
+| seed | condition | EPR | HumanEval+ pass@1 | MBPP+ pass@1 | visible−held-out gap |
+|---:|---|:---:|:---:|:---:|:---:|
+| 0 | A3' visible-only | 0.458 | 69.5% | 58.2% | −1.61 pp |
+| 0 | A3 matched | 0.465 | 69.5% | 58.5% | −1.61 pp |
+| 1 | A3' visible-only | 0.429 | 73.2% | 60.1% | −0.48 pp |
+| 1 | A3 matched | 0.468 | 70.7% | 59.0% | −0.81 pp |
+| 2 | A3' visible-only | 0.474 | 72.0% | 58.7% | −0.48 pp |
+| 2 | A3 matched | 0.506 | 72.6% | 59.0% | −0.16 pp |
+| mean | A3' visible-only | **0.454** | 71.5% | 59.0% | **−0.86 pp** |
+| mean | A3 matched | **0.480** | 70.9% | 58.8% | **−0.86 pp** |
+
+The pre-specified Goodhart signal is absent: the mean visible-minus-held-out gap
+is negative and numerically identical in the two conditions. Per-seed paired gap
+effects are 0.00, +0.32, and −0.32 pp (all bootstrap p≥0.73). Fixed visible-test
+subsampling therefore does not measurably increase reward-specific overfitting in
+this setup.
+
+Endpoint differences are not stable either. Matched A3 minus A3' averages −0.61 pp
+on HumanEval+ and −0.18 pp on MBPP+. Seed 1 has nominal paired-bootstrap p=0.033
+and 0.035, but only four discordant tasks in each comparison (exact McNemar
+p=0.125); all six seed×benchmark tests are null after Holm-Bonferroni correction,
+and seeds 0/2 change direction. This supports a matched **null result**, not a
+subsampling benefit or penalty.
+
+Serialized curves, gap records, paired comparisons, and the aggregate report are
+under `results/`. Rebuild the aggregate with:
+
+```bash
+python -m analysis.a3matched_report --out /tmp/a3matched_summary.json
+```
+
+### Input reproducibility
+
+Exact prompt and SFT snapshots, row counts, and SHA-256 values are in
+`data/snapshots/pre_a4/` and `results/pre_a4_input_manifest.json`. The historical
+seed-0 writeup reports 255 SFT examples; the continuation and confirmatory runs used
+the archived 254-row `sft_base.jsonl`, so those inputs are not treated as identical.
+Future SFT generation records `--seed`; the A3'/matched pool builder is already
+byte-for-byte deterministic.
 
 ## A4 — OPD
 
