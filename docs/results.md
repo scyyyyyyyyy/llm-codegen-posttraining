@@ -268,5 +268,61 @@ byte-for-byte deterministic.
 
 ## A4 — OPD
 
-_Pending._ The dense-signal limit and the only arm expected to lift the pass@k
-ceiling rather than just sharpen it.
+Each seed starts from its matching A1 SFT checkpoint. A4 samples eight completions
+for each of the same 392 training prompts (3,136 rollouts), scores the sampled
+tokens under the frozen 7B teacher, and applies the immediate sampled reverse-KL
+policy-gradient objective. Rank-32 LoRA, learning rate 1e-5, and gradient
+accumulation 32 produce 98 optimizer updates per seed.
+
+### Dense-signal dynamics
+
+| seed | first-10 sampled KL | last-10 sampled KL | last − first | completion tokens |
+|---:|:---:|:---:|:---:|---:|
+| 0 | 0.1710 | 0.1518 | −0.0192 | 632,690 |
+| 1 | 0.1631 | 0.1483 | −0.0148 | 639,835 |
+| 2 | 0.1713 | 0.1484 | −0.0229 | 648,150 |
+
+The sampled reverse-KL estimate declines in all three runs (mean change −0.0190),
+so the dense teacher signal measurably moves the on-policy student distribution.
+This is a training-dynamics result; sampled finite-batch KL estimates need not be
+non-negative at every individual update.
+
+### Held-out endpoints and paired teacher comparison
+
+| seed | HumanEval+ A1 → A4 | MBPP+ A1 → A4 | teacher-only / student-only (HE) | teacher-only / student-only (MBPP) |
+|---:|:---:|:---:|:---:|:---:|
+| 0 | 72.56 → **74.39** | 60.85 → **61.64** | 25 / 4 | 62 / 23 |
+| 1 | 72.56 → **73.17** | 59.52 → **60.58** | 27 / 4 | 63 / 20 |
+| 2 | 72.56 → **73.17** | 59.79 → **62.17** | 27 / 4 | 59 / 22 |
+| mean ± SD | **73.58 ± 0.70** | **61.46 ± 0.81** | — | — |
+
+The three-seed mean improves over seed-matched A1 by 1.02 pp on HumanEval+ and
+1.41 pp on MBPP+. All six seed×benchmark deltas are positive, but they are small
+relative to benchmark resolution and are not presented as statistically decisive.
+The exact paired matrices are teacher-dominated on every seed: the 7B model still
+solves substantially more teacher-only tasks than the student solves student-only
+tasks.
+
+### Seed-2 pass@k diagnostic
+
+Each cell is HumanEval+ / MBPP+ (temperature 0.8, n=64):
+
+| checkpoint | k=1 | k=4 | k=16 | k=64 |
+|---|:---:|:---:|:---:|:---:|
+| A1 seed 2 | 69.64 / 59.75 | 82.38 / 71.34 | 87.13 / 78.18 | 89.02 / 82.54 |
+| A3 seed 2 | 69.86 / 59.48 | 82.42 / 70.93 | 87.38 / 77.84 | 90.24 / 83.07 |
+| **A4 seed 2** | **69.86 / 61.55** | **82.54 / 72.83** | **88.11 / 78.92** | **91.46 / 83.33** |
+
+A4 is modestly above the seed-matched A1/A3 checkpoints at high k, especially on
+HumanEval+, but remains below the original A0 student's pass@64 (92.1 / 84.7) and
+well below the teacher (94.5 / 89.4). With pass@k evaluated on one A4 seed, this is
+a diagnostic improvement rather than confirmatory evidence that OPD expands the
+reachable solution set.
+
+The checked-in public artifacts contain the three KL curves, six endpoint summaries,
+six exact win matrices, and a sanitized provenance manifest. Rebuild and validate
+the aggregate report with:
+
+```bash
+python -m analysis.a4_report --out /tmp/a4_report.json
+```

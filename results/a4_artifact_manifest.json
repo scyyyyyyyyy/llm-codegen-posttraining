@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "scope": "A4 OPD, seeds 0/1/2",
+  "prepared_on_repository_base": "eeef91aa6739a5864d34bb6776468a9bb9549410",
+  "execution_source_note": "The remote machine could not report git HEAD because of Git safe-directory ownership checks. The exact executed A4 source snapshot is preserved in the local source archive, and its public A4 code is copied into this change.",
+  "design": {
+    "student": "Qwen2.5-Coder-1.5B-Instruct",
+    "teacher": "Qwen2.5-Coder-7B-Instruct",
+    "initialization": "seed-matched A1 SFT checkpoint",
+    "seeds": [0, 1, 2],
+    "loss": "sampled per-token reverse KL as an immediate policy-gradient advantage",
+    "prompts": 392,
+    "rollouts_per_prompt": 8,
+    "rollouts": 3136,
+    "gradient_accumulation": 32,
+    "optimizer_steps": 98,
+    "learning_rate": 1e-5,
+    "lora_rank": 32
+  },
+  "input_pool": {
+    "path": "data/snapshots/pre_a4/prompt_pool.clean.jsonl",
+    "rows": 392,
+    "bytes": 367436,
+    "sha256": "03cad62c6988d674ae05f301a0fa8d6bdf1affd966e75ccf0bdc46f17ad91287"
+  },
+  "a1_seed_model_sha256": {
+    "0": "36a8ea50bfdad0f85dbe7ba4440f1547be25198f8452ad6f4ceb958cf4cf35ac",
+    "1": "50fef40b644bbdd9eb2ac93f9e338a4019a46d077b5ae0699585252a40a54cfd",
+    "2": "d72db423ed8662cf1ab137f346333e1af5cae3c236c292c92b6697324a04c339"
+  },
+  "teacher_revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+  "retained_adapters": {
+    "a4-opd-s0": "82a3921fff758d69c82a5048404c56992bb30bbef95564d34a1703c12fceccca",
+    "a4-opd-s1": "857dc742a636e3d02459305f892f6b459f3ac020abc3d8ed9e7051aa3f70ca64",
+    "a4-opd-s2": "6c66f115d6cedc40c0ee579ee170a7cefa0f81aeb366887a5326b9f30f836134"
+  },
+  "execution_environment": {
+    "gpu": "NVIDIA GeForce RTX 4090, 24564 MiB",
+    "python": "3.12.3",
+    "torch": "2.11.0",
+    "transformers": "5.15.0",
+    "peft": "0.20.0",
+    "accelerate": "1.14.0",
+    "evalplus": "0.3.1"
+  },
+  "local_source_archive": {
+    "name": "a4_a5_results_bundle.tar.gz",
+    "bytes": 557989129,
+    "sha256": "628562d8becabdc3b53c182615a45da8e52e0ddb13c120dd305ad99de37fa093",
+    "note": "Local preservation source only; it also contains the separate A5 seed-0 pilot and large adapters, none of which are included here."
+  },
+  "post_archive_metadata_corrections": [
+    "The six A4 standard-eval summaries had the legacy arm label A0 changed to A4.",
+    "The two reconstructed teacher summaries had the legacy arm label A0 changed to A0-prime.",
+    "Machine-specific teacher_eval and student_eval paths were removed from the six checked-in win matrices. Metrics and task partitions are unchanged."
+  ],
+  "excluded_from_git": [
+    "A5 seed-0 pilot artifacts",
+    "model and adapter weights",
+    "raw EvalPlus generations",
+    "training and evaluation logs",
+    "AutoDL runner and shutdown automation"
+  ]
+}

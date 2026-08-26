@@ -4,9 +4,9 @@ A compute-matched empirical study of how **reward signal density** shapes
 reinforcement learning and distillation for a small code model
 (**Qwen2.5-Coder-1.5B-Instruct**) on **HumanEval+** and **MBPP+**.
 
-> **Status.** The pre-A4 suite is complete: A0/A0', three-seed A1/A2/A3, and the
-> prompt- and budget-matched A3' Goodhart test are reproducible. A4 OPD and A5 remain
-> outside this pre-A4 release; see [Roadmap](#roadmap).
+> **Status.** A0/A0', three-seed A1/A2/A3, the prompt- and budget-matched A3'
+> Goodhart test, and three-seed A4 OPD are reproducible. A5 remains outside this
+> release; see [Roadmap](#roadmap).
 
 ---
 
@@ -173,6 +173,23 @@ change sign. The supported conclusion is a matched **null**, not evidence that
 visible-test subsampling helps or hurts accuracy. Full tables are in
 [docs/results.md](docs/results.md).
 
+### 4.6 A4 OPD — dense feedback moves the policy, but does not close the ceiling
+
+A4 starts each seed from its matching A1 checkpoint and performs 3,136 on-policy
+rollouts over the same 392-prompt pool. The final-ten minus first-ten sampled
+reverse-KL estimate is negative for every seed (−0.019/−0.015/−0.023), confirming
+that the student moves toward the frozen 7B teacher on its own sampled tokens.
+
+Across three seeds, greedy pass@1 rises from the seed-matched A1 mean by **1.02 pp
+on HumanEval+** and **1.41 pp on MBPP+**, reaching **73.58 ± 0.70%** and
+**61.46 ± 0.81%**, respectively. The paired win matrices nevertheless remain
+teacher-dominated on every seed. Seed-2 pass@64 is 91.46% / 83.33% on
+HumanEval+ / MBPP+: slightly above the seed-matched A1/A3 checkpoints, but still
+below the original 1.5B base model's 92.1% / 84.7%. Thus A4 provides a small,
+consistent low-budget gain and clear KL movement, not evidence that OPD closes or
+decisively extends the capability ceiling. Full tables are in
+[docs/results.md](docs/results.md).
+
 ## 5. Repository layout
 
 ```
@@ -181,7 +198,7 @@ data/   build_prompt_pool.py · contamination_audit.py · build_sft_data.py
 train/  sft.py · grpo.py · opd.py
 eval/   sandbox.py · error_classify.py · rewards.py · epr.py
         run_eval.py · run_a0.py · a3prime.py · verify_pipeline.py · difficulty.py
-analysis/ stats.py · compare.py · a3matched_report.py
+analysis/ stats.py · compare.py · a3matched_report.py · win_matrix.py · a4_report.py
 configs/  sft · grpo_binary · grpo_partial · grpo_partial_subsample · opd
 scripts/  run_a0.sh
 docs/     autodl.md   (GPU setup)
@@ -231,6 +248,16 @@ python -m data.build_a3prime_pool \
 
 # Rebuild the checked-in matched-control statistical summary
 python -m analysis.a3matched_report --out /tmp/a3matched_summary.json
+
+# A4: repeat for seeds 0/1/2 with the matching A1 checkpoint
+python train/opd.py \
+  --init checkpoints/a1-s0 \
+  --teacher Qwen/Qwen2.5-Coder-7B-Instruct \
+  --pool data/snapshots/pre_a4/prompt_pool.clean.jsonl \
+  --seed 0 --out checkpoints/a4-opd-s0 --kl-log results/opd_kl_s0.jsonl
+
+# Validate every checked-in A4 curve, endpoint and teacher-student matrix
+python -m analysis.a4_report --out /tmp/a4_report.json
 ```
 
 ## 7. Scope and limitations
@@ -254,7 +281,8 @@ statistical rigor, and an explicit contamination audit — on a \$0–300 budget
   lift held-out pass@1; RQ4: post-training sharpens, not extends (pass@64 flat)**
 - [x] A2/A3 seed 2 + exact paired-bootstrap/McNemar comparison
 - [x] A3' visible-test subsampling + matched A3 control (3 seeds; RQ3 matched null)
-- [ ] A4 OPD + teacher–student win matrix (RQ4) — the dense limit
+- [x] A4 OPD + teacher–student win matrix (3 seeds; RQ4) — **sampled KL falls and
+  pass@1 gains 1.02/1.41 pp over A1, but the teacher/high-k ceiling remains open**
 - [ ] Statistical analysis writeup + blog
 
 ## References

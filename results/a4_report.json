@@ -1,0 +1,305 @@
+{
+  "A4": {
+    "a4-opd-s0": {
+      "benchmarks": {
+        "humaneval": {
+          "A4_minus_A1": 0.018292682926829285,
+          "pass@1_plus": 0.7439024390243902,
+          "pass@k_plus": {},
+          "seed_matched_A1_pass@1_plus": 0.725609756097561,
+          "student_only": 4,
+          "teacher_only": 25,
+          "teacher_student_matrix": [
+            [
+              17,
+              4
+            ],
+            [
+              25,
+              118
+            ]
+          ]
+        },
+        "mbpp": {
+          "A4_minus_A1": 0.007936507936507908,
+          "pass@1_plus": 0.6164021164021164,
+          "pass@k_plus": {},
+          "seed_matched_A1_pass@1_plus": 0.6084656084656085,
+          "student_only": 23,
+          "teacher_only": 62,
+          "teacher_student_matrix": [
+            [
+              83,
+              23
+            ],
+            [
+              62,
+              210
+            ]
+          ]
+        }
+      },
+      "init": "a1",
+      "kl_curve": {
+        "completion_tokens": 632690,
+        "elapsed_seconds": 25947.674243878573,
+        "first_10_mean_sampled_kl": 0.17100759402509147,
+        "last_10_mean_sampled_kl": 0.15178640663544446,
+        "last_minus_first_10_mean_sampled_kl": -0.01922118738964701,
+        "linear_slope_per_update": -0.00022592582072257093,
+        "peak_gpu_memory_bytes": 20394849280,
+        "records": 98,
+        "rollouts": 3136
+      },
+      "retained_adapter_sha256": "82a3921fff758d69c82a5048404c56992bb30bbef95564d34a1703c12fceccca",
+      "seed": 0
+    },
+    "a4-opd-s1": {
+      "benchmarks": {
+        "humaneval": {
+          "A4_minus_A1": 0.0060975609756097615,
+          "pass@1_plus": 0.7317073170731707,
+          "pass@k_plus": {},
+          "seed_matched_A1_pass@1_plus": 0.725609756097561,
+          "student_only": 4,
+          "teacher_only": 27,
+          "teacher_student_matrix": [
+            [
+              17,
+              4
+            ],
+            [
+              27,
+              116
+            ]
+          ]
+        },
+        "mbpp": {
+          "A4_minus_A1": 0.010582010582010581,
+          "pass@1_plus": 0.6058201058201058,
+          "pass@k_plus": {},
+          "seed_matched_A1_pass@1_plus": 0.5952380952380952,
+          "student_only": 20,
+          "teacher_only": 63,
+          "teacher_student_matrix": [
+            [
+              86,
+              20
+            ],
+            [
+              63,
+              209
+            ]
+          ]
+        }
+      },
+      "init": "a1-s1",
+      "kl_curve": {
+        "completion_tokens": 639835,
+        "elapsed_seconds": 27343.85865495354,
+        "first_10_mean_sampled_kl": 0.16309591555071085,
+        "last_10_mean_sampled_kl": 0.14825086190544157,
+        "last_minus_first_10_mean_sampled_kl": -0.01484505364526928,
+        "linear_slope_per_update": -0.00017422222718206344,
+        "peak_gpu_memory_bytes": 20402281472,
+        "records": 98,
+        "rollouts": 3136
+      },
+      "retained_adapter_sha256": "857dc742a636e3d02459305f892f6b459f3ac020abc3d8ed9e7051aa3f70ca64",
+      "seed": 1
+    },
+    "a4-opd-s2": {
+      "benchmarks": {
+        "humaneval": {
+          "A4_minus_A1": 0.0060975609756097615,
+          "pass@1_plus": 0.7317073170731707,
+          "pass@k_plus": {
+            "1": 0.6985518292682927,
+            "16": 0.8811388169188848,
+            "4": 0.8253896694010568,
+            "64": 0.9146341463414634
+          },
+          "seed_matched_A1_pass@1_plus": 0.725609756097561,
+          "student_only": 4,
+          "teacher_only": 27,
+          "teacher_student_matrix": [
+            [
+              17,
+              4
+            ],
+            [
+              27,
+              116
+            ]
+          ]
+        },
+        "mbpp": {
+          "A4_minus_A1": 0.023809523809523836,
+          "pass@1_plus": 0.6216931216931217,
+          "pass@k_plus": {
+            "1": 0.6154513888888888,
+            "16": 0.7891832323373289,
+            "4": 0.7282623069401293,
+            "64": 0.8333333333333334
+          },
+          "seed_matched_A1_pass@1_plus": 0.5978835978835979,
+          "student_only": 22,
+          "teacher_only": 59,
+          "teacher_student_matrix": [
+            [
+              84,
+              22
+            ],
+            [
+              59,
+              213
+            ]
+          ]
+        }
+      },
+      "init": "a1-s2",
+      "kl_curve": {
+        "completion_tokens": 648150,
+        "elapsed_seconds": 27646.910844977945,
+        "first_10_mean_sampled_kl": 0.17133726935670207,
+        "last_10_mean_sampled_kl": 0.1484095496409432,
+        "last_minus_first_10_mean_sampled_kl": -0.022927719715758882,
+        "linear_slope_per_update": -0.00026870670422055477,
+        "peak_gpu_memory_bytes": 20398648320,
+        "records": 98,
+        "rollouts": 3136
+      },
+      "retained_adapter_sha256": "6c66f115d6cedc40c0ee579ee170a7cefa0f81aeb366887a5326b9f30f836134",
+      "seed": 2
+    },
+    "aggregate": {
+      "humaneval": {
+        "A1_pass@1_plus": {
+          "mean": 0.725609756097561,
+          "sample_sd": 0.0,
+          "seeds": 3
+        },
+        "A4_pass@1_plus": {
+          "mean": 0.7357723577235772,
+          "sample_sd": 0.007040856941336905,
+          "seeds": 3
+        },
+        "mean_A4_minus_A1": 0.010162601626016232
+      },
+      "mbpp": {
+        "A1_pass@1_plus": {
+          "mean": 0.6005291005291006,
+          "sample_sd": 0.006999342092763477,
+          "seeds": 3
+        },
+        "A4_pass@1_plus": {
+          "mean": 0.6146384479717814,
+          "sample_sd": 0.008082144082814557,
+          "seeds": 3
+        },
+        "mean_A4_minus_A1": 0.014109347442680775
+      },
+      "mean_last_minus_first_10_sampled_kl": -0.018997986916891724
+    }
+  },
+  "design": {
+    "gradient_accumulation": 32,
+    "initialization": "seed-matched A1 SFT checkpoint",
+    "learning_rate": 1e-05,
+    "lora_rank": 32,
+    "loss": "sampled per-token reverse KL as an immediate policy-gradient advantage",
+    "optimizer_steps": 98,
+    "prompts": 392,
+    "rollouts": 3136,
+    "rollouts_per_prompt": 8,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "student": "Qwen2.5-Coder-1.5B-Instruct",
+    "teacher": "Qwen2.5-Coder-7B-Instruct"
+  },
+  "provenance": "results/a4_artifact_manifest.json",
+  "seed2_passk_comparison": {
+    "humaneval": {
+      "A1": {
+        "1": 0.696360518292683,
+        "16": 0.8713429789472245,
+        "4": 0.8238374005236614,
+        "64": 0.8902439024390244
+      },
+      "A3": {
+        "1": 0.6985518292682927,
+        "16": 0.8738457249546062,
+        "4": 0.8241800534010664,
+        "64": 0.9024390243902439
+      },
+      "A4": {
+        "1": 0.6985518292682927,
+        "16": 0.8811388169188848,
+        "4": 0.8253896694010568,
+        "64": 0.9146341463414634
+      },
+      "A4_minus_A1": {
+        "1": 0.0021913109756097615,
+        "16": 0.009795837971660393,
+        "4": 0.0015522688773954574,
+        "64": 0.024390243902439046
+      },
+      "A4_minus_A3": {
+        "1": 0.0,
+        "16": 0.007293091964278631,
+        "4": 0.0012096159999904765,
+        "64": 0.012195121951219523
+      }
+    },
+    "mbpp": {
+      "A1": {
+        "1": 0.5975115740740741,
+        "16": 0.7817800784439313,
+        "4": 0.713442335823414,
+        "64": 0.8253968253968254
+      },
+      "A3": {
+        "1": 0.5948247354497355,
+        "16": 0.7783965490173642,
+        "4": 0.7093459362611803,
+        "64": 0.8306878306878307
+      },
+      "A4": {
+        "1": 0.6154513888888888,
+        "16": 0.7891832323373289,
+        "4": 0.7282623069401293,
+        "64": 0.8333333333333334
+      },
+      "A4_minus_A1": {
+        "1": 0.01793981481481477,
+        "16": 0.007403153893397629,
+        "4": 0.014819971116715291,
+        "64": 0.00793650793650802
+      },
+      "A4_minus_A3": {
+        "1": 0.020626653439153375,
+        "16": 0.010786683319964685,
+        "4": 0.018916370678949024,
+        "64": 0.002645502645502673
+      }
+    }
+  },
+  "status": "verified",
+  "teacher_reference": {
+    "humaneval": {
+      "difference": 0.0,
+      "paired_reconstruction_pass@1_plus": 0.8719512195121951,
+      "published_pass@1_plus": 0.8719512195121951,
+      "purpose": "paired task outcomes only; not a new A0-prime claim"
+    },
+    "mbpp": {
+      "difference": 0.0,
+      "paired_reconstruction_pass@1_plus": 0.7195767195767195,
+      "published_pass@1_plus": 0.7195767195767195,
+      "purpose": "paired task outcomes only; not a new A0-prime claim"
+    }
+  }
+}

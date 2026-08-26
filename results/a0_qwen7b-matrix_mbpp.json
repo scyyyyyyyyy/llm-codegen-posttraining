@@ -1,0 +1,48 @@
+{
+  "arm": "A0'",
+  "dataset": "mbpp",
+  "tag": "qwen7b-matrix",
+  "n_tasks": 378,
+  "pass@1_base": 0.828042328042328,
+  "pass@1_plus": 0.7195767195767195,
+  "pass@1_plus_by_difficulty": {
+    "easy": 0.8412698412698413,
+    "medium": 0.696969696969697,
+    "hard": 0.5447154471544715
+  },
+  "error_breakdown": {
+    "correct": 82.27513227513228,
+    "syntax_error": 0.0,
+    "runtime_error": 2.9100529100529102,
+    "logic_error": 14.814814814814815,
+    "timeout": 0.0
+  },
+  "error_breakdown_by_difficulty": {
+    "easy": {
+      "correct": 89.94708994708995,
+      "syntax_error": 0.0,
+      "runtime_error": 1.5873015873015872,
+      "logic_error": 8.465608465608465,
+      "timeout": 0.0
+    },
+    "medium": {
+      "correct": 81.81818181818181,
+      "syntax_error": 0.0,
+      "runtime_error": 3.0303030303030303,
+      "logic_error": 15.151515151515152,
+      "timeout": 0.0
+    },
+    "hard": {
+      "correct": 70.73170731707317,
+      "syntax_error": 0.0,
+      "runtime_error": 4.878048780487805,
+      "logic_error": 24.390243902439025,
+      "timeout": 0.0
+    }
+  },
+  "difficulty_counts": {
+    "easy": 189,
+    "medium": 66,
+    "hard": 123
+  }
+}

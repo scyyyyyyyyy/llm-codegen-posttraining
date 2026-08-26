@@ -4,17 +4,21 @@ teacher_model: Qwen/Qwen2.5-Coder-7B-Instruct   # same family => shared tokenize
 init_checkpoint: checkpoints/sft                 # A1
 
 opd:
-  loss: reverse_kl            # completion tokens only (mode-seeking)
+  loss: sampled_reverse_kl    # per-token immediate advantage, completion only
   learning_rate: 1.0e-5       # LoRA
+  lora_rank: 32
+  temperature: 1.0
   max_new_tokens: 512
-  token_budget_match: grpo    # align generated-token volume to GRPO arms
-  teacher_precision: fp16      # forward only, single-card batched scoring
+  rollouts_per_prompt: 8      # 392 * 8 = GRPO's 3,136 generated completions
+  gradient_accumulation_steps: 32  # 98 optimizer updates
+  discount_factor: 0          # immediate token feedback (reference OPD recipe)
+  token_budget_match: grpo
+  teacher_precision: bf16     # frozen forward only, single 24 GB card
 
 logging:
   per_token_kl_curve: true    # RQ4 collapse analysis
-  quick_eval_every_steps: 200
-  quick_eval_problems: 50
-  checkpoint_every_steps: 200
+  checkpoint_every_steps: 20
+  resumable_adapter_and_optimizer: true
 
 seeds: [0, 1, 2]
 
