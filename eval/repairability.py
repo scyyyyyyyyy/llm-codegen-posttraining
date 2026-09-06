@@ -298,11 +298,32 @@ def _report(rows: list[dict]) -> None:
             rate = sum(r["repairability"] for r in sub) / len(sub)
             print(f"  [{lo:.2f}, {hi:.2f})        {len(sub):>3}     {rate:.2f}")
 
-    # Case studies: the two diagnostic corners.
+    # CONFOUND CHECK 1 -- repair vs resample. If "repairable" low-partial solutions
+    # were rewritten from scratch (low sim), repairability measures teacher skill,
+    # not the original's closeness. High sim => genuine local fix.
+    rep_rows = [r for r in rows if r["repairability"] == 1]
+    if rep_rows:
+        sims = np.array([r["sim_orig_final"] for r in rep_rows])
+        print(f"\nrepair-vs-resample: among repairable solutions, mean sim(orig,final) "
+              f"= {sims.mean():.2f}  (high => local repair, low => teacher rewrote)")
+
+    # Case studies: the two diagnostic corners, WITH code so we can eyeball.
     hi_pr_low_rep = [r for r in rows if r["partial_reward"] >= 0.5 and r["repairability"] == 0]
-    lo_pr_hi_rep = [r for r in rows if r["partial_reward"] < 0.5 and r["repairability"] == 1]
+    lo_pr_hi_rep = [r for r in rows if r["partial_reward"] < 0.34 and r["repairability"] == 1]
     print(f"\nhigh partial / NOT repairable (brute-force-like): {len(hi_pr_low_rep)}")
     print(f"low  partial / repairable (near-correct w/ bug):  {len(lo_pr_hi_rep)}")
+
+    def _dump(label, rs, k=2):
+        for r in rs[:k]:
+            print(f"\n  --- {label} | {r['task']} {r['entry_point']} "
+                  f"partial={r['partial_reward']} repair={r['repairability']} "
+                  f"rounds={r['rounds']} sim={r['sim_orig_final']} ---")
+            print("  ORIG :", r["orig_code"].replace("\n", "\n         ")[:300])
+            if r["repairability"] or r["final_code"] != r["orig_code"]:
+                print("  FINAL:", r["final_code"].replace("\n", "\n         ")[:300])
+
+    _dump("HIGH-partial NOT-repairable (brute?)", hi_pr_low_rep)
+    _dump("LOW-partial repairable (near-correct bug?)", lo_pr_hi_rep)
 
 
 if __name__ == "__main__":
