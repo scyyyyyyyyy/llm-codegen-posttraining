@@ -43,6 +43,53 @@ POOL = "data/snapshots/pre_a4/prompt_pool.clean.jsonl"
 
 # ---------- test helpers ----------
 
+def _build_tests_from_evalplus(task: dict, max_tests: int) -> list[str]:
+    """Build a LIST of individual `assert ep(*inp) == out` strings from an evalplus
+    task, using the canonical solution as the oracle. The training pool tops out at
+    3 tests/task (no partial-reward resolution); the eval sets have dozens, giving a
+    real partial-reward range. Pure diagnostic use (no training) on the eval set.
+    """
+    import copy
+
+    ep = task["entry_point"]
+    src = task["prompt"] + task["canonical_solution"]
+    ns: dict = {}
+    try:
+        exec(src, ns)  # canonical is trusted
+    except Exception:
+        return []
+    fn = ns.get(ep)
+    if not callable(fn):
+        return []
+    inputs = list(task.get("base_input") or []) + list(task.get("plus_input") or [])
+    tests, canon_def = [], f"{src}\n"
+    for inp in inputs[:max_tests]:
+        try:
+            out = fn(*copy.deepcopy(inp))
+            t = f"assert {ep}({', '.join(map(repr, inp))}) == {out!r}"
+        except Exception:
+            continue
+        # keep only tests the canonical itself passes (drops float/repr edge cases)
+        if run_one(canon_def, t, None).passed:
+            tests.append(t)
+    return tests
+
+
+def load_evalplus(dataset: str, n: int, max_tests: int, seed: int) -> list[dict]:
+    """A few eval tasks as pool-schema rows with a rich per-input test list."""
+    from evalplus.data import get_human_eval_plus, get_mbpp_plus
+
+    tasks = get_human_eval_plus() if dataset == "humaneval" else get_mbpp_plus()
+    rows = []
+    for tid, t in tasks.items():
+        tests = _build_tests_from_evalplus(t, max_tests)
+        if len(tests) >= 4:  # need enough to split with partial-reward resolution
+            rows.append({"id": tid, "prompt_text": t["prompt"],
+                         "entry_point": t["entry_point"], "tests": tests})
+    random.Random(seed).shuffle(rows)
+    return rows[:n]
+
+
 def split_tests(tests: list[str], seed: int) -> tuple[list[str], list[str]]:
     """Split a task's asserts into (visible, held-out), >=1 each. Deterministic."""
     idx = list(range(len(tests)))
@@ -115,7 +162,13 @@ def repair_prompt(tok, prompt_text: str, entry_point: str, code: str, feedback: 
 
 def main() -> None:
     p = argparse.ArgumentParser()
+    p.add_argument("--source", default="humaneval",
+                   choices=["humaneval", "mbpp", "pool"],
+                   help="test source. eval sets give many tests/task (real partial "
+                        "range); 'pool' tops out at 3 tests -> no resolution.")
     p.add_argument("--pool", default=POOL)
+    p.add_argument("--max-tests", type=int, default=12,
+                   help="cap on tests/task built from the eval oracle")
     p.add_argument("--student", default=STUDENT)
     p.add_argument("--teacher", default=TEACHER)
     p.add_argument("--n", type=int, default=5, help="number of problems (smoke: 5)")
@@ -129,10 +182,13 @@ def main() -> None:
     from transformers import AutoTokenizer
     from vllm import LLM, SamplingParams
 
-    # --- pick problems that have enough tests to split ---
-    pool = [r for r in read_jsonl(args.pool) if len(r.get("tests", [])) >= 2]
-    random.Random(args.seed).shuffle(pool)
-    pool = pool[: args.n]
+    # --- pick problems that have enough tests to split with partial-reward range ---
+    if args.source == "pool":
+        pool = [r for r in read_jsonl(args.pool) if len(r.get("tests", [])) >= 2]
+        random.Random(args.seed).shuffle(pool)
+        pool = pool[: args.n]
+    else:
+        pool = load_evalplus(args.source, args.n, args.max_tests, args.seed)
     for r in pool:
         r["visible"], r["heldout"] = split_tests(r["tests"], args.seed)
     print(f"{len(pool)} problems (>=2 tests), R={args.rounds}, rollouts={args.rollouts}")
