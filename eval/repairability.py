@@ -110,6 +110,16 @@ def all_pass(code: str, tests: list[str]) -> bool:
     return bool(tests) and all(run_one(code, t, None).passed for t in tests)
 
 
+def defines_entry(code: str, entry_point: str) -> bool:
+    """True iff `code` actually defines the target function (subprocess-checked).
+
+    Rejects extraction failures (e.g. the model emitted only print/test-driver
+    lines): those are not solutions, and counting them as 'repaired' just measures
+    the teacher re-solving the task from scratch.
+    """
+    return run_one(code, f"assert callable({entry_point})", None).passed
+
+
 def error_feedback(code: str, visible: list[str]) -> str:
     """Error-ONLY message for the first failing visible test (no expected values).
 
@@ -202,11 +212,15 @@ def main() -> None:
     del student
 
     solutions = []
+    skipped_nonfn = 0
     for r, o in zip(pool, s_out):
         for cand in o.outputs:
             code = extract_code(cand.text)
             if all_pass(code, r["heldout"]):
                 continue  # already correct on held-out -> not an interesting failure
+            if not defines_entry(code, r["entry_point"]):
+                skipped_nonfn += 1  # extraction failure, not a solution -> exclude
+                continue
             solutions.append({
                 "task": r["id"], "prompt_text": r["prompt_text"],
                 "entry_point": r["entry_point"],
@@ -217,7 +231,8 @@ def main() -> None:
                 "heldout_frac_before": pass_fraction(code, r["heldout"]),
                 "code": code, "rounds": 0, "converged": False, "done": False,
             })
-    print(f"collected {len(solutions)} failing rollouts")
+    print(f"collected {len(solutions)} failing rollouts "
+          f"({skipped_nonfn} skipped: no function defined)")
     if not solutions:
         print("no failing rollouts to probe (try more rollouts / higher temp)")
         return
@@ -280,23 +295,36 @@ def _report(rows: list[dict]) -> None:
 
     pr = np.array([r["partial_reward"] for r in rows])
     rep = np.array([r["repairability"] for r in rows], dtype=float)
+    # LOCAL repairability = reached held-out-correct AND via a local edit (high sim).
+    # reach alone is dominated by "can the teacher re-solve the task"; gating on sim
+    # keeps only genuine near-correct fixes, which is what "closeness" means.
+    val = np.array([r["repairability"] * r["sim_orig_final"] for r in rows])
+    TAU = 0.6
+    local = np.array([float(r["repairability"] and r["sim_orig_final"] >= TAU) for r in rows])
     print(f"\n=== Repairability probe: {len(rows)} failing solutions ===")
-    print(f"mean partial_reward (visible) = {pr.mean():.3f}   "
-          f"mean Repairability (held-out after repair) = {rep.mean():.3f}")
+    print(f"mean partial_reward (visible) = {pr.mean():.3f}")
+    print(f"mean Repairability  (reach, any edit)     = {rep.mean():.3f}")
+    print(f"mean LocalRepair    (reach AND sim>= {TAU}) = {local.mean():.3f}  "
+          f"<- the closeness-valid version")
 
-    # The headline: does partial reward predict repairability? (point-biserial r)
-    if pr.std() > 0 and rep.std() > 0:
-        r = float(np.corrcoef(pr, rep)[0, 1])
-        print(f"corr(partial_reward, Repairability) = {r:+.3f}   "
-              f"(near 0 => test-pass fraction does NOT capture fixability)")
+    def _corr(y, name):
+        if pr.std() > 0 and y.std() > 0:
+            print(f"corr(partial_reward, {name}) = {float(np.corrcoef(pr, y)[0,1]):+.3f}")
 
-    # Repairability rate within partial-reward bins -> look for non-monotonic / spread
-    print("\npartial_reward bin      n    repairability_rate")
+    # Headline: does partial reward predict fixability? (both raw and locality-gated)
+    _corr(rep, "Repairability(reach)")
+    _corr(val, "reach*sim (graded)")
+    _corr(local, "LocalRepair")
+    print("  (near 0 => test-pass fraction does NOT capture closeness-to-correct)")
+
+    # Rates within partial-reward bins -> look for non-monotonic / spread
+    print("\npartial_reward bin      n    reach    LocalRepair")
     for lo, hi in [(0.0, 0.34), (0.34, 0.67), (0.67, 1.0001)]:
         sub = [r for r in rows if lo <= r["partial_reward"] < hi]
         if sub:
-            rate = sum(r["repairability"] for r in sub) / len(sub)
-            print(f"  [{lo:.2f}, {hi:.2f})        {len(sub):>3}     {rate:.2f}")
+            reach = sum(r["repairability"] for r in sub) / len(sub)
+            lr = sum(r["repairability"] and r["sim_orig_final"] >= TAU for r in sub) / len(sub)
+            print(f"  [{lo:.2f}, {hi:.2f})        {len(sub):>3}     {reach:.2f}     {lr:.2f}")
 
     # CONFOUND CHECK 1 -- repair vs resample. If "repairable" low-partial solutions
     # were rewritten from scratch (low sim), repairability measures teacher skill,
