@@ -162,7 +162,9 @@ def repair_prompt(tok, prompt_text: str, entry_point: str, code: str, feedback: 
         f"Problem:\n{prompt_text}\n\n"
         f"Your current solution:\n```python\n{code}\n```\n\n"
         f"{feedback}\n\n"
-        f"Fix the function `{entry_point}`. Return only the corrected code."
+        f"Make the SMALLEST possible change to fix the bug -- edit only the lines "
+        f"that are wrong, do not rewrite the whole function. Return only the "
+        f"corrected code for `{entry_point}`."
     )
     return _chat(tok, [{"role": "system", "content": SYSTEM},
                        {"role": "user", "content": user}])
